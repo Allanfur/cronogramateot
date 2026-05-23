@@ -427,39 +427,28 @@ async function dbLoad() {
   }
 }
 
-let pendingQueue = {};
-let saveTimer = null;
-
-async function dbSave(changedState) {
-  // also save locally as fallback
-  try { localStorage.setItem('ortop26_fallback', JSON.stringify(changedState)); } catch(_) {}
-
+async function dbToggle(id, isChecked) {
   setSyncStatus('loading', 'salvando...');
-  const entries = Object.entries(changedState);
-  if (!entries.length) { setSyncStatus('ok', 'sincronizado'); return; }
-
-  const payload = entries.map(([item_id, feito]) => ({
-    item_id,
-    feito,
-    atualizado_em: new Date().toISOString()
-  }));
-
   try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { ...HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify(payload)
-    });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (isChecked) {
+      const r = await fetch(API, {
+        method: 'POST',
+        headers: { ...HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify([{ item_id: id, feito: true, atualizado_em: new Date().toISOString() }])
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+    } else {
+      const r = await fetch(API + '?item_id=eq.' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: HEADERS
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+    }
     setSyncStatus('ok', 'sincronizado');
   } catch(e) {
     setSyncStatus('err', 'erro ao salvar');
   }
-}
-
-function scheduleSave() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => dbSave(state), 800);
+  try { localStorage.setItem('ortop26_fallback', JSON.stringify(state)); } catch(_) {}
 }
 
 // ── App state ─────────────────────────────────────────────────
@@ -470,10 +459,10 @@ let activeFilter = 'all';
 function sid(mod, type, idx) { return mod + '|' + type + '|' + idx; }
 
 async function toggle(id) {
-  state[id] = !state[id];
-  if (!state[id]) delete state[id];
+  const nowChecked = !state[id];
+  if (nowChecked) { state[id] = true; } else { delete state[id]; }
   render();
-  scheduleSave();
+  dbToggle(id, nowChecked);
 }
 
 async function resetAll() {
