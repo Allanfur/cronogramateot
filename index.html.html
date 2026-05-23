@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<title>ORTOP-REVIEW 2026 — Lucas Vieira</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #273549;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --green: #10b981;
+    --green-bg: rgba(16,185,129,0.12);
+    --green-border: rgba(16,185,129,0.35);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59,130,246,0.12);
+    --blue-border: rgba(59,130,246,0.35);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245,158,11,0.12);
+    --radius: 10px;
+    --radius-sm: 7px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .logo { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .logo span { color: var(--green); }
+  .header-sub { font-size: 12px; color: var(--text3); }
+  .reset-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .reset-btn:active { opacity: 0.7; }
+
+  /* STATS */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-val { font-size: 18px; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  /* PROGRESS */
+  .prog-section {
+    padding: 12px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .prog-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .prog-track {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .prog-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--green);
+    transition: width .4s ease;
+  }
+  .prog-mini {
+    display: flex;
+    gap: 3px;
+    margin-top: 8px;
+  }
+  .prog-mini-bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--surface2);
+    transition: background .3s;
+    cursor: pointer;
+  }
+  .prog-mini-bar.done { background: var(--green); }
+  .prog-mini-bar.hab-done { background: var(--blue); }
+
+  /* NAV */
+  .nav-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav-inner {
+    display: flex;
+    padding: 10px 16px;
+    gap: 6px;
+    white-space: nowrap;
+    min-width: max-content;
+  }
+  .nav-btn {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .nav-btn:active { opacity: 0.7; }
+  .nav-btn.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* FILTER */
+  .filter-bar {
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .filter-lbl { font-size: 12px; color: var(--text3); }
+  .seg {
+    display: flex;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    flex: 1;
+  }
+  .seg-btn {
+    flex: 1;
+    font-size: 12px;
+    padding: 6px 4px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: center;
+  }
+  .seg-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* CONTENT */
+  main { padding: 12px 16px 80px; }
+
+  .mod-block { margin-bottom: 24px; }
+  .mod-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .mod-title-wrap {}
+  .mod-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .mod-weeks { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .mod-badges { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+  .badge-sim {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 99px;
+    background: var(--amber-bg);
+    color: var(--amber);
+    border: 1px solid rgba(245,158,11,0.25);
+  }
+  .mod-pct { font-size: 12px; color: var(--text3); text-align: right; flex-shrink: 0; }
+  .mod-pct strong { font-size: 15px; font-weight: 700; color: var(--green); display: block; }
+  .mod-track {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .mod-track-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .3s; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .section-label.hab-lbl { color: #60a5fa; margin-top: 10px; }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  @media (max-width: 380px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: repeat(2,1fr); }
+  }
+  @media (min-width: 600px) {
+    .cards-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    transition: border-color .15s, background .15s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .topic-card:active { opacity: 0.75; transform: scale(0.98); }
+  .topic-card.done {
+    background: var(--green-bg);
+    border-color: var(--green-border);
+  }
+  .hab-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    transition: border-color .15s, background .15s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .hab-card:active { opacity: 0.75; transform: scale(0.98); }
+  .hab-card.done {
+    background: var(--blue-bg);
+    border-color: var(--blue-border);
+  }
+
+  .chk {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border2);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+  }
+  .topic-card.done .chk { background: var(--green); border-color: var(--green); }
+  .hab-card.done .chk { background: var(--blue); border-color: var(--blue); }
+  .chk svg { display: none; }
+  .done .chk svg { display: block; }
+
+  .card-text { font-size: 13px; color: var(--text); line-height: 1.35; }
+  .topic-card.done .card-text { color: #6ee7b7; }
+  .hab-card.done .card-text { color: #93c5fd; }
+  .card-week { font-size: 10px; color: var(--text3); margin-top: 3px; }
+  .topic-card.done .card-week { color: #34d399; }
+  .hab-card.done .card-week { color: #60a5fa; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 40px 16px; color: var(--text3); font-size: 14px; }
+
+  /* FOOTER */
+  footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .footer-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .footer-dot.green { background: var(--green); }
+  .footer-dot.blue { background: var(--blue); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="logo">Cronograma <span>TEOT</span></div>
+      <div class="header-sub">Bons estudos</div>
+    </div>
+    <button class="reset-btn" onclick="resetAll()">Resetar</button>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-val" id="st-td">0</div><div class="stat-lbl">Tópicos</div></div>
+  <div class="stat"><div class="stat-val" id="st-hd">0</div><div class="stat-lbl">Habilidades</div></div>
+  <div class="stat"><div class="stat-val" id="st-pct">0%</div><div class="stat-lbl">Progresso</div></div>
+  <div class="stat"><div class="stat-val" id="st-mc">0</div><div class="stat-lbl">Módulos</div></div>
+</div>
+
+<div class="prog-section">
+  <div class="prog-row">
+    <span>Progresso geral</span>
+    <span id="prog-lbl">0 / 0 itens</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="prog-mini" id="prog-mini"></div>
+</div>
+
+<div class="nav-scroll">
+  <div class="nav-inner" id="nav-inner"></div>
+</div>
+
+<div class="filter-bar">
+  <span class="filter-lbl">Filtrar:</span>
+  <div class="seg">
+    <button class="seg-btn active" onclick="setFilter('all',this)">Todos</button>
+    <button class="seg-btn" onclick="setFilter('pending',this)">Pendentes</button>
+    <button class="seg-btn" onclick="setFilter('done',this)">Feitos</button>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <span class="footer-dot green"></span><span>Tópico feito</span>
+  <span class="footer-dot blue"></span><span>Habilidade feita</span>
+  <span style="color:var(--text3)">Salvo automaticamente</span>
+</footer>
+
+<script>
+const DATA = [
+  {mod:"Conceitos Básicos",semanas:"S1–S2",topics:[
+    {t:"Consolidação óssea e tratamento conservador",s:"S1"},
+    {t:"Atendimento ao politraumatizado",s:"S1"},
+    {t:"Fraturas expostas",s:"S1"},
+    {t:"Fixadores externos",s:"S1"},
+    {t:"Fixação interna",s:"S1"},
+    {t:"Osteomielites",s:"S2"},
+    {t:"Síndrome compartimental",s:"S2"},
+    {t:"Pseudoartrose",s:"S2"},
+    {t:"Fraturas por estresse",s:"S2"},
+    {t:"Lesões musculares",s:"S2"},
+    {t:"Dor ortopédica",s:"S2"},
+    {t:"Tuberculose e outras infecções",s:"S2"},
+  ],hab:[
+    {t:"Fixador externo linear de tíbia",s:"S1"},
+    {t:"Fixador externo modular de fêmur",s:"S1"},
+    {t:"Fixador externo de bacia – crista ilíaca",s:"S1"},
+    {t:"Fixador externo de bacia – supra-acetabular",s:"S1"},
+    {t:"Placa de compressão interfragmentária",s:"S1"},
+    {t:"Compressão interfragmentária com parafuso",s:"S1"},
+  ],sim:[]},
+  {mod:"Trauma MMII",semanas:"S3–S7",topics:[
+    {t:"Fraturas do anel pélvico",s:"S3"},
+    {t:"Fraturas do acetábulo",s:"S3"},
+    {t:"Luxação do quadril",s:"S3"},
+    {t:"Fraturas da cabeça do fêmur",s:"S3"},
+    {t:"Fraturas do colo do fêmur",s:"S4"},
+    {t:"Fraturas transtrocantéricas",s:"S4"},
+    {t:"Fraturas subtrocantéricas",s:"S4"},
+    {t:"Fraturas da diáfise do fêmur",s:"S4"},
+    {t:"Fraturas do fêmur distal",s:"S5"},
+    {t:"Fraturas da patela",s:"S5"},
+    {t:"Lesão do mecanismo extensor",s:"S5"},
+    {t:"Luxação do joelho",s:"S5"},
+    {t:"Fraturas do planalto tibial",s:"S6"},
+    {t:"Fraturas diafisárias da tíbia",s:"S6"},
+    {t:"Fraturas do pilão tibial",s:"S6"},
+    {t:"Fraturas do tornozelo – parte 1",s:"S7"},
+    {t:"Fraturas do tornozelo – parte 2",s:"S7"},
+    {t:"Fraturas do retropé",s:"S7"},
+    {t:"Fraturas do médio e antepé",s:"S7"},
+  ],hab:[
+    {t:"Parafuso de compressão sacral",s:"S3"},
+    {t:"Haste anterógrada de fêmur",s:"S4"},
+    {t:"Haste céfalo-medular",s:"S4"},
+    {t:"Haste retrógrada de fêmur",s:"S4"},
+    {t:"Parafuso deslizante do quadril",s:"S4"},
+    {t:"Placa bloqueada de fêmur distal",s:"S5"},
+    {t:"Parafuso deslizante condilar",s:"S5"},
+    {t:"Banda de tensão de patela",s:"S5"},
+    {t:"Fixador externo transarticular de joelho",s:"S6"},
+    {t:"Haste de tíbia",s:"S6"},
+    {t:"Placa bloqueada de tíbia proximal",s:"S6"},
+    {t:"Placa bloqueada de tíbia distal",s:"S6"},
+    {t:"Fixador externo transarticular de tornozelo",s:"S7"},
+    {t:"Placa bloqueada de fíbula",s:"S7"},
+  ],sim:["Conceitos Básicos + Trauma MMII"]},
+  {mod:"Trauma de Coluna",semanas:"S8",topics:[
+    {t:"Fraturas cervicais altas",s:"S8"},
+    {t:"Fraturas cervicais baixas",s:"S8"},
+    {t:"Fraturas toracolombares",s:"S8"},
+    {t:"Trauma raquimedulares e síndromes medulares",s:"S8"},
+  ],hab:[],sim:[]},
+  {mod:"Trauma MMSS",semanas:"S9–S11",topics:[
+    {t:"Fraturas da clavícula",s:"S9"},
+    {t:"Luxação acromioclavicular e esternoclavicular",s:"S9"},
+    {t:"Fraturas da escápula",s:"S9"},
+    {t:"Fraturas do úmero proximal",s:"S9"},
+    {t:"Fraturas da diáfise do úmero",s:"S10"},
+    {t:"Fraturas da porção distal do úmero",s:"S10"},
+    {t:"Fraturas do cotovelo – parte 1",s:"S10"},
+    {t:"Fraturas do cotovelo – parte 2",s:"S10"},
+    {t:"Fraturas do antebraço",s:"S11"},
+    {t:"Fraturas do rádio distal",s:"S11"},
+    {t:"Fraturas do carpo",s:"S11"},
+  ],hab:[
+    {t:"Placa bloqueada de clavícula",s:"S9"},
+    {t:"Placa de úmero proximal",s:"S9"},
+    {t:"Fixador externo transarticular de cotovelo",s:"S10"},
+    {t:"Placa bloqueada de úmero distal",s:"S10"},
+    {t:"Placa bloqueada de olécrano",s:"S10"},
+    {t:"Banda de tensão de olécrano",s:"S10"},
+    {t:"Placa bloqueada de rádio distal",s:"S11"},
+  ],sim:["Trauma Coluna + Trauma MMSS + Trauma Pediátrico"]},
+  {mod:"Trauma Pediátrico",semanas:"S12–S13",topics:[
+    {t:"Fraturas dos MMSS pediátricas – parte 1",s:"S12"},
+    {t:"Fraturas dos MMSS pediátricas – parte 2",s:"S12"},
+    {t:"Fraturas dos MMSS pediátricas – parte 3",s:"S12"},
+    {t:"Fraturas dos MMII pediátricas – parte 1",s:"S13"},
+    {t:"Fraturas dos MMII pediátricas – parte 2",s:"S13"},
+    {t:"Fraturas dos MMII pediátricas – parte 3",s:"S13"},
+  ],hab:[],sim:[]},
+  {mod:"Ombro e Cotovelo",semanas:"S14–S17",topics:[
+    {t:"Anatomia e radiologia do ombro",s:"S14"},
+    {t:"Anatomia e radiologia do cotovelo",s:"S14"},
+    {t:"Biomecânica e exame físico do ombro",s:"S14"},
+    {t:"Biomecânica e exame físico do cotovelo",s:"S14"},
+    {t:"Lesões do manguito rotador",s:"S15"},
+    {t:"Tendinite calcárea",s:"S15"},
+    {t:"Capsulite adesiva",s:"S15"},
+    {t:"Instabilidade glenoumeral",s:"S15"},
+    {t:"Artroscopia do ombro",s:"S16"},
+    {t:"Artroses e artroplastia do ombro",s:"S16"},
+    {t:"Lesões tendíneas do ombro e cotovelo",s:"S16"},
+    {t:"Instabilidade do cotovelo",s:"S16"},
+    {t:"Epicondilites",s:"S17"},
+    {t:"Rigidez do cotovelo",s:"S17"},
+    {t:"Artroscopia e artroplastia do cotovelo",s:"S17"},
+  ],hab:[
+    {t:"Artroscopia de ombro",s:"S16"},
+    {t:"Artroplastias de ombro",s:"S16"},
+  ],sim:["Ombro / Cotovelo / Joelho"]},
+  {mod:"Joelho",semanas:"S18–S20",topics:[
+    {t:"Anatomia e radiografia do joelho",s:"S18"},
+    {t:"Biomecânica e exame físico do joelho",s:"S18"},
+    {t:"Artrose do joelho",s:"S19"},
+    {t:"Osteonecrose do joelho",s:"S19"},
+    {t:"Lesões da cartilagem do joelho",s:"S19"},
+    {t:"Lesões do LCA",s:"S20"},
+    {t:"Instabilidade patelo-femoral",s:"S20"},
+    {t:"Lesões meniscais",s:"S20"},
+    {t:"Lesões do LCP",s:"S20"},
+  ],hab:[
+    {t:"Artroplastia total de joelho",s:"S19"},
+    {t:"Artroscopia de joelho",s:"S20"},
+  ],sim:[]},
+  {mod:"Coluna",semanas:"S21–S22",topics:[
+    {t:"Anatomia e radiologia da coluna",s:"S21"},
+    {t:"Biomecânica e exame físico da coluna",s:"S21"},
+    {t:"Dor lombar",s:"S21"},
+    {t:"Escolioses",s:"S22"},
+    {t:"Espondilolisteses",s:"S22"},
+    {t:"Scheuermann e espondilite anquilosante",s:"S22"},
+  ],hab:[],sim:["Coluna / Pé e Tornozelo / Quadril"]},
+  {mod:"Pé e Tornozelo",semanas:"S23–S24",topics:[
+    {t:"Anatomia e radiologia do pé e tornozelo",s:"S23"},
+    {t:"Biomecânica e exame físico do pé e tornozelo",s:"S23"},
+    {t:"Hálux valgo",s:"S23"},
+    {t:"Pé diabético e pé reumatoide",s:"S23"},
+    {t:"Deformidades dos pés",s:"S24"},
+    {t:"Coalisões tarsais",s:"S24"},
+    {t:"Lesões do aquiles",s:"S24"},
+    {t:"Miscelânea pé e tornozelo",s:"S24"},
+  ],hab:[],sim:[]},
+  {mod:"Quadril",semanas:"S25–S26",topics:[
+    {t:"Anatomia e radiologia do quadril",s:"S25"},
+    {t:"Biomecânica e exame físico do quadril",s:"S25"},
+    {t:"Impacto femoroacetabular",s:"S25"},
+    {t:"Coxartrose",s:"S26"},
+    {t:"Artroplastia total do quadril",s:"S26"},
+    {t:"Osteonecrose do quadril",s:"S26"},
+  ],hab:[
+    {t:"Artroplastia total de quadril",s:"S26"},
+  ],sim:[]},
+  {mod:"Mão e Punho",semanas:"S27–S30",topics:[
+    {t:"Anatomia da mão e punho",s:"S27"},
+    {t:"Exame físico da mão e punho",s:"S27"},
+    {t:"Distrofia simpático reflexa",s:"S27"},
+    {t:"Dupuytren",s:"S27"},
+    {t:"Doença de Kienbock",s:"S28"},
+    {t:"Mão reumatoide",s:"S28"},
+    {t:"Tenossinovites",s:"S28"},
+    {t:"Lesão de tendões flexores e extensores",s:"S28"},
+    {t:"Paralisia braquial obstétrica",s:"S29"},
+    {t:"Lesão de plexo traumático",s:"S29"},
+    {t:"Síndromes compressivas – parte 1",s:"S29"},
+    {t:"Síndromes compressivas – parte 2",s:"S29"},
+    {t:"Deformidades congênitas dos MMSS – parte 1",s:"S30"},
+    {t:"Deformidades congênitas dos MMSS – parte 2",s:"S30"},
+    {t:"Instabilidade do carpo",s:"S30"},
+    {t:"Reimplante e amputações",s:"S30"},
+    {t:"Rizartrose",s:"S30"},
+  ],hab:[
+    {t:"Suturas de tendão",s:"S28"},
+  ],sim:["Mão / Tumor"]},
+  {mod:"Tumores Ósseos",semanas:"S31–S32",topics:[
+    {t:"Princípios dos tumores",s:"S31"},
+    {t:"Lesões pseudotumorais",s:"S31"},
+    {t:"Tumores de partes moles",s:"S31"},
+    {t:"Tumores ósseos benignos",s:"S31"},
+    {t:"Tumores ósseos malignos – parte 1",s:"S32"},
+    {t:"Tumores ósseos malignos – parte 2",s:"S32"},
+    {t:"Tumores fibrosos",s:"S32"},
+    {t:"Metástases ósseas e mieloma múltiplo",s:"S32"},
+  ],hab:[],sim:[]},
+  {mod:"Ortopedia Pediátrica",semanas:"S33–S35",topics:[
+    {t:"Marcha",s:"S33"},
+    {t:"Mielomeningocele",s:"S33"},
+    {t:"Maus tratos",s:"S34"},
+    {t:"Osteogênese imperfeita",s:"S34"},
+    {t:"Mucopolissacaridoses",s:"S34"},
+    {t:"Displasia do desenvolvimento do quadril",s:"S35"},
+    {t:"Doença de Perthes",s:"S35"},
+    {t:"Epifisiólise",s:"S35"},
+    {t:"Sinovite transitória e artrite séptica",s:"S35"},
+    {t:"Tíbia vara de Blount",s:"S35"},
+    {t:"Deformidades congênitas dos MMII",s:"S35"},
+    {t:"Pé torto congênito",s:"S35"},
+    {t:"Sprengel",s:"S35"},
+    {t:"Torcicolo congênito",s:"S35"},
+  ],hab:[
+    {t:"Suspensório de Pavlik",s:"S35"},
+  ],sim:["Ortopedia Pediátrica"]},
+];
+
+const KEY = 'ortop26_site_v1';
+let state = {};
+let activeTab = 'all';
+let activeFilter = 'all';
+
+function load() {
+  try { const r = localStorage.getItem(KEY); if (r) state = JSON.parse(r); } catch(e) {}
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+}
+function sid(mod, type, idx) { return mod + '|' + type + '|' + idx; }
+function toggle(id) {
+  state[id] = !state[id];
+  if (!state[id]) delete state[id];
+  save();
+  render();
+}
+function resetAll() {
+  if (confirm('Tem certeza? Isso vai apagar todo o progresso.')) {
+    state = {};
+    save();
+    render();
+  }
+}
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function setTab(t) {
+  activeTab = t;
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === t);
+  });
+  render();
+}
+
+function counts() {
+  let tt=0,td=0,ht=0,hd=0,mc=0;
+  DATA.forEach(m => {
+    let mt=0,md=0,mh=0,mhd=0;
+    m.topics.forEach((_,i)=>{ const id=sid(m.mod,'t',i); tt++;mt++; if(state[id]){td++;md++;} });
+    m.hab.forEach((_,i)=>{ const id=sid(m.mod,'h',i); ht++;mh++; if(state[id]){hd++;mhd++;} });
+    if((mt+mh)>0 && (md+mhd)===(mt+mh)) mc++;
+  });
+  return {tt,td,ht,hd,mc,total:tt+ht,done:td+hd};
+}
+
+function chkSVG() {
+  return '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8.5 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+load();
+
+function buildNav() {
+  const nav = document.getElementById('nav-inner');
+  nav.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'nav-btn' + (activeTab === 'all' ? ' active' : '');
+  allBtn.dataset.tab = 'all';
+  allBtn.textContent = 'Todos';
+  allBtn.onclick = () => setTab('all');
+  nav.appendChild(allBtn);
+  DATA.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'nav-btn' + (activeTab === m.mod ? ' active' : '');
+    b.dataset.tab = m.mod;
+    b.textContent = m.mod;
+    b.onclick = () => setTab(m.mod);
+    nav.appendChild(b);
+  });
+}
+
+function buildMini() {
+  const mini = document.getElementById('prog-mini');
+  mini.innerHTML = '';
+  DATA.forEach(m => {
+    const total = m.topics.length + m.hab.length;
+    const done = m.topics.filter((_,i)=>state[sid(m.mod,'t',i)]).length
+               + m.hab.filter((_,i)=>state[sid(m.mod,'h',i)]).length;
+    const bar = document.createElement('div');
+    bar.className = 'prog-mini-bar' + (done===total&&total>0?' done':'') + (done>0&&done<total?' hab-done':'');
+    bar.title = m.mod + ': ' + done + '/' + total;
+    bar.onclick = () => setTab(m.mod);
+    mini.appendChild(bar);
+  });
+}
+
+function renderModBlock(m) {
+  const totalT = m.topics.length, totalH = m.hab.length;
+  const doneT = m.topics.filter((_,i)=>state[sid(m.mod,'t',i)]).length;
+  const doneH = m.hab.filter((_,i)=>state[sid(m.mod,'h',i)]).length;
+  const total = totalT + totalH, done = doneT + doneH;
+  const pct = total > 0 ? Math.round(done/total*100) : 0;
+
+  const filtT = m.topics.filter((_,i)=>{
+    const d = !!state[sid(m.mod,'t',i)];
+    return activeFilter==='all' || (activeFilter==='done'&&d) || (activeFilter==='pending'&&!d);
+  });
+  const filtH = m.hab.filter((_,i)=>{
+    const d = !!state[sid(m.mod,'h',i)];
+    return activeFilter==='all' || (activeFilter==='done'&&d) || (activeFilter==='pending'&&!d);
+  });
+
+  if (!filtT.length && !filtH.length) return null;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'mod-block';
+
+  wrap.innerHTML = `
+    <div class="mod-head">
+      <div class="mod-title-wrap">
+        <div class="mod-title">${m.mod}</div>
+        <div class="mod-weeks">${m.semanas}</div>
+        
+      </div>
+      <div class="mod-pct"><strong>${pct}%</strong>${done}/${total}</div>
+    </div>
+    <div class="mod-track"><div class="mod-track-fill" style="width:${pct}%"></div></div>
+  `;
+
+  if (filtT.length) {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label';
+    lbl.textContent = 'TÓPICOS';
+    wrap.appendChild(lbl);
+
+    const grid = document.createElement('div');
+    grid.className = 'cards-grid';
+    m.topics.forEach((tp, i) => {
+      const id = sid(m.mod,'t',i);
+      const d = !!state[id];
+      if (activeFilter==='done'&&!d) return;
+      if (activeFilter==='pending'&&d) return;
+      const card = document.createElement('div');
+      card.className = 'topic-card' + (d?' done':'');
+      card.innerHTML = `<div class="chk">${chkSVG()}</div><div><div class="card-text">${tp.t}</div><div class="card-week">${tp.s}</div></div>`;
+      card.onclick = () => toggle(id);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+  }
+
+  if (filtH.length) {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label hab-lbl';
+    lbl.textContent = '⚙ HABILIDADES PRÁTICAS';
+    wrap.appendChild(lbl);
+
+    const grid = document.createElement('div');
+    grid.className = 'cards-grid';
+    m.hab.forEach((h, i) => {
+      const id = sid(m.mod,'h',i);
+      const d = !!state[id];
+      if (activeFilter==='done'&&!d) return;
+      if (activeFilter==='pending'&&d) return;
+      const card = document.createElement('div');
+      card.className = 'hab-card' + (d?' done':'');
+      card.innerHTML = `<div class="chk">${chkSVG()}</div><div><div class="card-text">${h.t}</div><div class="card-week">${h.s}</div></div>`;
+      card.onclick = () => toggle(id);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+  }
+
+  return wrap;
+}
+
+function render() {
+  buildNav();
+  buildMini();
+
+  const c = counts();
+  document.getElementById('st-td').textContent = c.td + '/' + c.tt;
+  document.getElementById('st-hd').textContent = c.hd + '/' + c.ht;
+  document.getElementById('st-pct').textContent = c.total > 0 ? Math.round(c.done/c.total*100) + '%' : '0%';
+  document.getElementById('st-mc').textContent = c.mc + '/' + DATA.length;
+  document.getElementById('prog-lbl').textContent = c.done + ' / ' + c.total + ' itens';
+  document.getElementById('prog-fill').style.width = (c.total > 0 ? Math.round(c.done/c.total*100) : 0) + '%';
+
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  const toShow = activeTab === 'all' ? DATA : DATA.filter(m => m.mod === activeTab);
+  let first = true;
+  toShow.forEach(m => {
+    const el = renderModBlock(m);
+    if (el) {
+      if (!first) {
+        const div = document.createElement('div');
+        div.className = 'divider';
+        main.appendChild(div);
+      }
+      main.appendChild(el);
+      first = false;
+    }
+  });
+
+  if (first) {
+    main.innerHTML = '<div class="empty">Nenhum item para mostrar com esse filtro.</div>';
+  }
+}
+
+render();
+</script>
+</body>
+</html>
