@@ -537,12 +537,6 @@ async function doLogin() {
   const senha = document.getElementById('login-senha').value;
   if (!nome || !senha) { setLoginError('Preencha todos os campos.'); return; }
 
-  // Master login
-  if (nome.toLowerCase() === 'allan' && senha === 'allan27') {
-    saveSession({ id: '00000000-0000-0000-0000-000000000001', nome: 'Allan', is_admin: true });
-    enterDashboard();
-    return;
-  }
   setLoginError('Entrando...');
   const hash = await hashSenha(senha);
 
