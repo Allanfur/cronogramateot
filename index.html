@@ -4,190 +4,623 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f172a">
-<title>Cronograma TEOT</title>
+<title>TEOT — Área de Estudos</title>
 <style>
-  :root {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --surface2: #273549;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.15);
-    --text: #f1f5f9;
-    --text2: #94a3b8;
-    --text3: #64748b;
-    --green: #10b981;
-    --green-bg: rgba(16,185,129,0.12);
-    --green-border: rgba(16,185,129,0.35);
-    --blue: #3b82f6;
-    --blue-bg: rgba(59,130,246,0.12);
-    --blue-border: rgba(59,130,246,0.35);
-    --amber: #f59e0b;
-    --radius: 10px;
-    --radius-sm: 7px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.5;
-  }
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 16px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .logo { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
-  .logo span { color: var(--green); }
-  .header-sub { font-size: 12px; color: var(--text3); }
-  .header-right { display: flex; align-items: center; gap: 8px; }
-  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); flex-shrink: 0; transition: background .3s; }
-  .sync-dot.ok { background: var(--green); }
-  .sync-dot.err { background: #ef4444; }
-  .sync-dot.loading { background: var(--amber); animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-  .sync-lbl { font-size: 11px; color: var(--text3); }
-  .reset-btn {
-    font-size: 12px; padding: 6px 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border2);
-    background: transparent; color: var(--text2); cursor: pointer;
-  }
-  .stats-bar {
-    display: grid; grid-template-columns: repeat(4,1fr);
-    gap: 8px; padding: 12px 16px;
-    background: var(--bg); border-bottom: 1px solid var(--border);
-  }
-  .stat { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
-  .stat-val { font-size: 18px; font-weight: 700; color: var(--text); }
-  .stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
-  .prog-section { padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
-  .prog-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
-  .prog-track { height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
-  .prog-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .4s ease; }
-  .prog-mini { display: flex; gap: 3px; margin-top: 8px; }
-  .prog-mini-bar { flex: 1; height: 4px; border-radius: 99px; background: var(--surface2); transition: background .3s; cursor: pointer; }
-  .prog-mini-bar.done { background: var(--green); }
-  .prog-mini-bar.partial { background: var(--blue); }
-  .nav-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; background: var(--surface); border-bottom: 1px solid var(--border); }
-  .nav-scroll::-webkit-scrollbar { display: none; }
-  .nav-inner { display: flex; padding: 10px 16px; gap: 6px; white-space: nowrap; min-width: max-content; }
-  .nav-btn { font-size: 13px; padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all .15s; }
-  .nav-btn.active { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
-  .filter-bar { padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
-  .filter-lbl { font-size: 12px; color: var(--text3); }
-  .seg { display: flex; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; flex: 1; }
-  .seg-btn { flex: 1; font-size: 12px; padding: 6px 4px; border: none; background: transparent; color: var(--text2); cursor: pointer; transition: all .15s; text-align: center; }
-  .seg-btn.active { background: var(--surface2); color: var(--text); font-weight: 600; }
-  main { padding: 12px 16px 80px; }
-  .mod-block { margin-bottom: 24px; }
-  .mod-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
-  .mod-title { font-size: 15px; font-weight: 700; color: var(--text); }
-  .mod-weeks { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .mod-pct { font-size: 12px; color: var(--text3); text-align: right; flex-shrink: 0; }
-  .mod-pct strong { font-size: 15px; font-weight: 700; color: var(--green); display: block; }
-  .mod-track { height: 3px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 10px; }
-  .mod-track-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .3s; }
-  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 7px; display: flex; align-items: center; gap: 5px; }
-  .section-label.hab-lbl { color: #60a5fa; margin-top: 10px; }
-  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  @media (max-width: 380px) { .cards-grid { grid-template-columns: 1fr; } .stats-bar { grid-template-columns: repeat(2,1fr); } }
-  @media (min-width: 600px) { .cards-grid { grid-template-columns: repeat(3,1fr); } }
-  .topic-card, .hab-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 10px;
-    cursor: pointer; display: flex; align-items: flex-start; gap: 8px;
-    transition: border-color .15s, background .15s;
-    -webkit-user-select: none; user-select: none;
-  }
-  .topic-card:active, .hab-card:active { opacity: 0.75; transform: scale(0.98); }
-  .topic-card.done { background: var(--green-bg); border-color: var(--green-border); }
-  .hab-card.done { background: var(--blue-bg); border-color: var(--blue-border); }
-  .topic-card.loading-card, .hab-card.loading-card { opacity: 0.5; pointer-events: none; }
-  .chk { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border2); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
-  .topic-card.done .chk { background: var(--green); border-color: var(--green); }
-  .hab-card.done .chk { background: var(--blue); border-color: var(--blue); }
-  .chk svg { display: none; }
-  .done .chk svg { display: block; }
-  .card-text { font-size: 13px; color: var(--text); line-height: 1.35; }
-  .topic-card.done .card-text { color: #6ee7b7; }
-  .hab-card.done .card-text { color: #93c5fd; }
-  .card-week { font-size: 10px; color: var(--text3); margin-top: 3px; }
-  .topic-card.done .card-week { color: #34d399; }
-  .hab-card.done .card-week { color: #60a5fa; }
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
-  .empty { text-align: center; padding: 40px 16px; color: var(--text3); font-size: 14px; }
-  footer {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--surface); border-top: 1px solid var(--border);
-    padding: 10px 16px; display: flex; justify-content: center;
-    align-items: center; gap: 16px; font-size: 11px; color: var(--text3);
-  }
-  .footer-dot { width: 6px; height: 6px; border-radius: 50%; }
-  .footer-dot.green { background: var(--green); }
-  .footer-dot.blue { background: var(--blue); }
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface2: #273549;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.18);
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,0.12);
+  --green-border: rgba(16,185,129,0.35);
+  --blue: #3b82f6;
+  --blue-bg: rgba(59,130,246,0.12);
+  --blue-border: rgba(59,130,246,0.35);
+  --red: #ef4444;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── LOGIN ── */
+#screen-login {
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+.login-box {
+  width: 100%;
+  max-width: 380px;
+}
+.login-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.login-logo-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.login-logo-title span { color: var(--green); }
+.login-logo-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+}
+.login-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin-bottom: 24px;
+}
+.login-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  padding: 7px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text3);
+  transition: all .2s;
+  border: none;
+  background: transparent;
+}
+.login-tab.active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; }
+.field input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+}
+.field input:focus { border-color: var(--green); }
+.btn-primary {
+  width: 100%;
+  background: var(--green);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 11px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: opacity .15s;
+  margin-top: 4px;
+}
+.btn-primary:active { opacity: 0.8; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.login-error {
+  font-size: 12px;
+  color: var(--red);
+  text-align: center;
+  margin-top: 10px;
+  min-height: 18px;
+}
+.login-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 20px;
+}
+
+/* ── DASHBOARD ── */
+#screen-dashboard {
+  flex-direction: column;
+}
+.dash-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.dash-logo { font-size: 16px; font-weight: 800; color: var(--text); }
+.dash-logo span { color: var(--green); }
+.dash-user { display: flex; align-items: center; gap: 10px; }
+.dash-username { font-size: 13px; color: var(--text2); }
+.btn-logout {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-logout:hover { color: var(--red); border-color: var(--red); }
+.dash-body { padding: 20px 16px 40px; max-width: 600px; margin: 0 auto; width: 100%; }
+.dash-greeting {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.dash-sub { font-size: 13px; color: var(--text3); margin-bottom: 24px; }
+.dash-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+.crono-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+.crono-card:hover { border-color: var(--green); }
+.crono-card:active { transform: scale(0.98); }
+.crono-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.crono-info { flex: 1; }
+.crono-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.crono-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.crono-progress { margin-top: 10px; }
+.crono-progress-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.crono-bar { height: 4px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+.crono-bar-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .4s; }
+.crono-arrow {
+  font-size: 18px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+/* ── CRONOGRAMA ── */
+#screen-crono { flex-direction: column; }
+
+.crono-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.crono-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.btn-back {
+  font-size: 13px;
+  color: var(--text2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+.btn-back:hover { color: var(--green); }
+.crono-header-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.crono-header-right { display: flex; align-items: center; gap: 8px; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); transition: background .3s; }
+.sync-dot.ok { background: var(--green); }
+.sync-dot.err { background: var(--red); }
+.sync-dot.loading { background: #f59e0b; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+.sync-lbl { font-size: 11px; color: var(--text3); }
+
+.stats-bar {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 8px; padding: 12px 16px;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+}
+.stat { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
+.stat-val { font-size: 18px; font-weight: 700; color: var(--text); }
+.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.prog-section { padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+.prog-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+.prog-track { height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+.prog-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .4s ease; }
+.prog-mini { display: flex; gap: 3px; margin-top: 8px; }
+.prog-mini-bar { flex: 1; height: 4px; border-radius: 99px; background: var(--surface2); transition: background .3s; cursor: pointer; }
+.prog-mini-bar.done { background: var(--green); }
+.prog-mini-bar.partial { background: var(--blue); }
+.nav-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; background: var(--surface); border-bottom: 1px solid var(--border); }
+.nav-scroll::-webkit-scrollbar { display: none; }
+.nav-inner { display: flex; padding: 10px 16px; gap: 6px; white-space: nowrap; min-width: max-content; }
+.nav-btn { font-size: 13px; padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all .15s; }
+.nav-btn.active { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+.filter-bar { padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+.filter-lbl { font-size: 12px; color: var(--text3); }
+.seg { display: flex; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; flex: 1; }
+.seg-btn { flex: 1; font-size: 12px; padding: 6px 4px; border: none; background: transparent; color: var(--text2); cursor: pointer; transition: all .15s; text-align: center; }
+.seg-btn.active { background: var(--surface2); color: var(--text); font-weight: 600; }
+main { padding: 12px 16px 80px; }
+.mod-block { margin-bottom: 24px; }
+.mod-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
+.mod-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.mod-weeks { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.mod-pct { font-size: 12px; color: var(--text3); text-align: right; flex-shrink: 0; }
+.mod-pct strong { font-size: 15px; font-weight: 700; color: var(--green); display: block; }
+.mod-track { height: 3px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 10px; }
+.mod-track-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .3s; }
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 7px; }
+.section-label.hab-lbl { color: #60a5fa; margin-top: 10px; }
+.cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+@media (max-width: 380px) { .cards-grid { grid-template-columns: 1fr; } .stats-bar { grid-template-columns: repeat(2,1fr); } }
+@media (min-width: 600px) { .cards-grid { grid-template-columns: repeat(3,1fr); } }
+.topic-card, .hab-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px;
+  cursor: pointer; display: flex; align-items: flex-start; gap: 8px;
+  transition: border-color .15s, background .15s;
+  -webkit-user-select: none; user-select: none;
+}
+.topic-card:active, .hab-card:active { opacity: 0.75; transform: scale(0.98); }
+.topic-card.done { background: var(--green-bg); border-color: var(--green-border); }
+.hab-card.done { background: var(--blue-bg); border-color: var(--blue-border); }
+.chk { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border2); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.topic-card.done .chk { background: var(--green); border-color: var(--green); }
+.hab-card.done .chk { background: var(--blue); border-color: var(--blue); }
+.chk svg { display: none; }
+.done .chk svg { display: block; }
+.card-text { font-size: 13px; color: var(--text); line-height: 1.35; }
+.topic-card.done .card-text { color: #6ee7b7; }
+.hab-card.done .card-text { color: #93c5fd; }
+.card-week { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.topic-card.done .card-week { color: #34d399; }
+.hab-card.done .card-week { color: #60a5fa; }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.empty { text-align: center; padding: 40px 16px; color: var(--text3); font-size: 14px; }
+.crono-footer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 10px 16px; display: flex; justify-content: center;
+  align-items: center; gap: 16px; font-size: 11px; color: var(--text3);
+}
+.footer-dot { width: 6px; height: 6px; border-radius: 50%; }
+.footer-dot.green { background: var(--green); }
+.footer-dot.blue { background: var(--blue); }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-top">
-    <div>
-      <div class="logo">Cronograma <span>TEOT</span></div>
-      <div class="header-sub">Bons estudos</div>
+<!-- ══════════════ SCREEN: LOGIN ══════════════ -->
+<div class="screen active" id="screen-login">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-title">TEOT <span>Estudos</span></div>
+      <div class="login-logo-sub">Desenvolvido pelo Allan Furtado</div>
     </div>
-    <div class="header-right">
-      <div class="sync-dot loading" id="sync-dot"></div>
-      <span class="sync-lbl" id="sync-lbl">conectando...</span>
-      <button class="reset-btn" onclick="resetAll()">Resetar</button>
+    <div class="login-card">
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchTab('login')">Entrar</button>
+        <button class="login-tab" onclick="switchTab('register')">Cadastrar</button>
+      </div>
+      <div id="tab-login">
+        <div class="field"><label>Nome</label><input id="login-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
+        <div class="field"><label>Senha</label><input id="login-senha" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="btn-primary" onclick="doLogin()">Entrar</button>
+      </div>
+      <div id="tab-register" style="display:none">
+        <div class="field"><label>Nome</label><input id="reg-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
+        <div class="field"><label>Senha</label><input id="reg-senha" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+        <div class="field"><label>Confirmar senha</label><input id="reg-senha2" type="password" placeholder="Repita a senha" autocomplete="new-password"></div>
+        <div class="field"><label>Código de convite</label><input id="reg-codigo" type="text" placeholder="Código de acesso" autocomplete="off"></div>
+        <button class="btn-primary" onclick="doRegister()">Criar conta</button>
+      </div>
+      <div class="login-error" id="login-error"></div>
     </div>
-  </div>
-</header>
-
-<div class="stats-bar">
-  <div class="stat"><div class="stat-val" id="st-td">0</div><div class="stat-lbl">Tópicos</div></div>
-  <div class="stat"><div class="stat-val" id="st-hd">0</div><div class="stat-lbl">Habilidades</div></div>
-  <div class="stat"><div class="stat-val" id="st-pct">0%</div><div class="stat-lbl">Progresso</div></div>
-  <div class="stat"><div class="stat-val" id="st-mc">0</div><div class="stat-lbl">Módulos</div></div>
-</div>
-
-<div class="prog-section">
-  <div class="prog-row"><span>Progresso geral</span><span id="prog-lbl">0 / 0 itens</span></div>
-  <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-  <div class="prog-mini" id="prog-mini"></div>
-</div>
-
-<div class="nav-scroll"><div class="nav-inner" id="nav-inner"></div></div>
-
-<div class="filter-bar">
-  <span class="filter-lbl">Filtrar:</span>
-  <div class="seg">
-    <button class="seg-btn active" onclick="setFilter('all',this)">Todos</button>
-    <button class="seg-btn" onclick="setFilter('pending',this)">Pendentes</button>
-    <button class="seg-btn" onclick="setFilter('done',this)">Feitos</button>
+    <div class="login-footer">Bons estudos 📚</div>
   </div>
 </div>
 
-<main id="main"></main>
+<!-- ══════════════ SCREEN: DASHBOARD ══════════════ -->
+<div class="screen" id="screen-dashboard">
+  <div class="dash-header">
+    <div class="dash-logo">TEOT <span>Estudos</span></div>
+    <div class="dash-user">
+      <span class="dash-username" id="dash-username"></span>
+      <button class="btn-logout" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="dash-greeting" id="dash-greeting">Olá! 👋</div>
+    <div class="dash-sub">Escolha um cronograma para estudar</div>
+    <div class="dash-section-label">CRONOGRAMAS DISPONÍVEIS</div>
+    <div class="crono-card" onclick="goToCrono()">
+      <div class="crono-icon">📋</div>
+      <div class="crono-info">
+        <div class="crono-title">Cronograma TEOT</div>
+        <div class="crono-desc">35 semanas</div>
+        <div class="crono-progress">
+          <div class="crono-progress-row">
+            <span>Seu progresso</span>
+            <span id="dash-pct">0%</span>
+          </div>
+          <div class="crono-bar"><div class="crono-bar-fill" id="dash-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="crono-arrow">›</div>
+    </div>
+  </div>
+</div>
 
-<footer>
-  <span class="footer-dot green"></span><span>Tópico</span>
-  <span class="footer-dot blue"></span><span>Habilidade</span>
-  <span style="color:var(--text3)" id="footer-status">Sincronizando...</span>
-</footer>
+<!-- ══════════════ SCREEN: CRONOGRAMA ══════════════ -->
+<div class="screen" id="screen-crono">
+  <div class="crono-header">
+    <div class="crono-header-top">
+      <button class="btn-back" onclick="goToDashboard()">‹ Painel</button>
+      <div class="crono-header-title">Cronograma TEOT</div>
+      <div class="crono-header-right">
+        <div class="sync-dot loading" id="sync-dot"></div>
+        <span class="sync-lbl" id="sync-lbl">...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val" id="st-td">0</div><div class="stat-lbl">Tópicos</div></div>
+    <div class="stat"><div class="stat-val" id="st-hd">0</div><div class="stat-lbl">Habilidades</div></div>
+    <div class="stat"><div class="stat-val" id="st-pct">0%</div><div class="stat-lbl">Progresso</div></div>
+    <div class="stat"><div class="stat-val" id="st-mc">0</div><div class="stat-lbl">Módulos</div></div>
+  </div>
+
+  <div class="prog-section">
+    <div class="prog-row"><span>Progresso geral</span><span id="prog-lbl">0 / 0 itens</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="prog-mini" id="prog-mini"></div>
+  </div>
+
+  <div class="nav-scroll"><div class="nav-inner" id="nav-inner"></div></div>
+
+  <div class="filter-bar">
+    <span class="filter-lbl">Filtrar:</span>
+    <div class="seg">
+      <button class="seg-btn active" onclick="setFilter('all',this)">Todos</button>
+      <button class="seg-btn" onclick="setFilter('pending',this)">Pendentes</button>
+      <button class="seg-btn" onclick="setFilter('done',this)">Feitos</button>
+    </div>
+  </div>
+
+  <main id="main"></main>
+
+  <div class="crono-footer">
+    <span class="footer-dot green"></span><span>Tópico</span>
+    <span class="footer-dot blue"></span><span>Habilidade</span>
+    <span id="footer-status" style="color:var(--text3)">...</span>
+  </div>
+</div>
 
 <script>
-const SUPABASE_URL = 'https://piziokskqrrnxahabhbt.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_s4zQ4WplLU0HfDuvyYnPgA_hnnsd7oE';
+// ══════════════════════════════════════════════
+// CONFIG SUPABASE
+// ══════════════════════════════════════════════
+const SB_URL  = 'https://piziokskqrrnxahabhbt.supabase.co';
+const SB_KEY  = 'sb_publishable_s4zQ4WplLU0HfDuvyYnPgA_hnnsd7oE';
+const HEADERS = {
+  'apikey': SB_KEY,
+  'Authorization': 'Bearer ' + SB_KEY,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
 
-const DATA = [
+function api(path, opts = {}) {
+  return fetch(SB_URL + '/rest/v1/' + path, {
+    ...opts,
+    headers: { ...HEADERS, ...(opts.headers || {}) }
+  });
+}
+
+// ══════════════════════════════════════════════
+// HASH senha (SHA-256)
+// ══════════════════════════════════════════════
+async function hashSenha(senha) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ══════════════════════════════════════════════
+// SESSÃO
+// ══════════════════════════════════════════════
+let currentUser = null;
+
+function saveSession(user) {
+  currentUser = user;
+  localStorage.setItem('teot_session', JSON.stringify(user));
+}
+function loadSession() {
+  try { const s = localStorage.getItem('teot_session'); return s ? JSON.parse(s) : null; } catch { return null; }
+}
+function clearSession() {
+  currentUser = null;
+  localStorage.removeItem('teot_session');
+}
+
+// ══════════════════════════════════════════════
+// NAVEGAÇÃO
+// ══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goToDashboard() {
+  showScreen('screen-dashboard');
+  loadDashboardProgress();
+}
+
+function goToCrono() {
+  showScreen('screen-crono');
+  cronoState = {};
+  activeTab = 'all';
+  activeFilter = 'all';
+  loadCronoProgress();
+}
+
+function doLogout() {
+  clearSession();
+  showScreen('screen-login');
+}
+
+// ══════════════════════════════════════════════
+// LOGIN / REGISTRO
+// ══════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.login-tab').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('tab-login').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('tab-register').style.display = tab === 'register' ? '' : 'none';
+  setLoginError('');
+}
+
+function setLoginError(msg) {
+  document.getElementById('login-error').textContent = msg;
+}
+
+async function doLogin() {
+  const nome = document.getElementById('login-nome').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  if (!nome || !senha) { setLoginError('Preencha todos os campos.'); return; }
+
+  // Master login
+  if (nome.toLowerCase() === 'allan' && senha === 'allan27') {
+    saveSession({ id: 'master-allan', nome: 'Allan', is_admin: true });
+    enterDashboard();
+    return;
+  }
+  setLoginError('Entrando...');
+  const hash = await hashSenha(senha);
+
+  try {
+    const r = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin');
+    const rows = await r.json();
+    if (!rows.length) { setLoginError('Usuário não encontrado.'); return; }
+
+    // verify password
+    const r2 = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&senha_hash=eq.' + hash + '&select=id,nome,is_admin');
+    const matched = await r2.json();
+    if (!matched.length) { setLoginError('Senha incorreta.'); return; }
+
+    saveSession(matched[0]);
+    enterDashboard();
+  } catch(e) {
+    setLoginError('Erro de conexão. Tente novamente.');
+  }
+}
+
+async function doRegister() {
+  const nome = document.getElementById('reg-nome').value.trim();
+  const senha = document.getElementById('reg-senha').value;
+  const senha2 = document.getElementById('reg-senha2').value;
+
+  if (!nome || !senha || !senha2) { setLoginError('Preencha todos os campos.'); return; }
+  if (senha !== senha2) { setLoginError('As senhas não coincidem.'); return; }
+  const codigo = document.getElementById('reg-codigo').value.trim().toLowerCase();
+  if (codigo !== 'teot') { setLoginError('Código de convite inválido.'); return; }
+
+  setLoginError('Criando conta...');
+  const hash = await hashSenha(senha);
+
+  try {
+    const r = await api('usuarios', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({ nome, senha_hash: hash })
+    });
+    if (r.status === 409) { setLoginError('Esse nome já está em uso.'); return; }
+    if (!r.ok) { setLoginError('Erro ao criar conta.'); return; }
+    const rows = await r.json();
+    saveSession(rows[0]);
+    enterDashboard();
+  } catch(e) {
+    setLoginError('Erro de conexão. Tente novamente.');
+  }
+}
+
+function enterDashboard() {
+  setLoginError('');
+  document.getElementById('dash-username').textContent = currentUser.nome;
+  const hora = new Date().getHours();
+  const saud = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+  document.getElementById('dash-greeting').textContent = saud + ', ' + currentUser.nome + '! 👋';
+  goToDashboard();
+}
+
+// ══════════════════════════════════════════════
+// DASHBOARD — progresso resumido
+// ══════════════════════════════════════════════
+async function loadDashboardProgress() {
+  try {
+    if (currentUser.id === 'master-allan') { document.getElementById('dash-pct').textContent = '—'; return; }
+    const r = await api('progresso_v2?usuario_id=eq.' + currentUser.id + '&select=item_id');
+    const rows = await r.json();
+    const done = rows.length;
+    const total = CRONO_DATA.reduce((a,m) => a + m.topics.length + m.hab.length, 0);
+    const pct = total > 0 ? Math.round(done/total*100) : 0;
+    document.getElementById('dash-pct').textContent = pct + '%';
+    document.getElementById('dash-bar').style.width = pct + '%';
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+// CRONOGRAMA DATA
+// ══════════════════════════════════════════════
+const CRONO_DATA = [
   {mod:"Conceitos Básicos",semanas:"S1–S2",topics:[
     {t:"Consolidação óssea e tratamento conservador",s:"S1"},
     {t:"Atendimento ao politraumatizado",s:"S1"},
@@ -210,295 +643,185 @@ const DATA = [
     {t:"Compressão interfragmentária com parafuso",s:"S1"},
   ]},
   {mod:"Trauma MMII",semanas:"S3–S7",topics:[
-    {t:"Fraturas do anel pélvico",s:"S3"},
-    {t:"Fraturas do acetábulo",s:"S3"},
-    {t:"Luxação do quadril",s:"S3"},
-    {t:"Fraturas da cabeça do fêmur",s:"S3"},
-    {t:"Fraturas do colo do fêmur",s:"S4"},
-    {t:"Fraturas transtrocantéricas",s:"S4"},
-    {t:"Fraturas subtrocantéricas",s:"S4"},
-    {t:"Fraturas da diáfise do fêmur",s:"S4"},
-    {t:"Fraturas do fêmur distal",s:"S5"},
-    {t:"Fraturas da patela",s:"S5"},
-    {t:"Lesão do mecanismo extensor",s:"S5"},
-    {t:"Luxação do joelho",s:"S5"},
-    {t:"Fraturas do planalto tibial",s:"S6"},
-    {t:"Fraturas diafisárias da tíbia",s:"S6"},
-    {t:"Fraturas do pilão tibial",s:"S6"},
-    {t:"Fraturas do tornozelo – parte 1",s:"S7"},
-    {t:"Fraturas do tornozelo – parte 2",s:"S7"},
-    {t:"Fraturas do retropé",s:"S7"},
+    {t:"Fraturas do anel pélvico",s:"S3"},{t:"Fraturas do acetábulo",s:"S3"},
+    {t:"Luxação do quadril",s:"S3"},{t:"Fraturas da cabeça do fêmur",s:"S3"},
+    {t:"Fraturas do colo do fêmur",s:"S4"},{t:"Fraturas transtrocantéricas",s:"S4"},
+    {t:"Fraturas subtrocantéricas",s:"S4"},{t:"Fraturas da diáfise do fêmur",s:"S4"},
+    {t:"Fraturas do fêmur distal",s:"S5"},{t:"Fraturas da patela",s:"S5"},
+    {t:"Lesão do mecanismo extensor",s:"S5"},{t:"Luxação do joelho",s:"S5"},
+    {t:"Fraturas do planalto tibial",s:"S6"},{t:"Fraturas diafisárias da tíbia",s:"S6"},
+    {t:"Fraturas do pilão tibial",s:"S6"},{t:"Fraturas do tornozelo – parte 1",s:"S7"},
+    {t:"Fraturas do tornozelo – parte 2",s:"S7"},{t:"Fraturas do retropé",s:"S7"},
     {t:"Fraturas do médio e antepé",s:"S7"},
   ],hab:[
-    {t:"Parafuso de compressão sacral",s:"S3"},
-    {t:"Haste anterógrada de fêmur",s:"S4"},
-    {t:"Haste céfalo-medular",s:"S4"},
-    {t:"Haste retrógrada de fêmur",s:"S4"},
-    {t:"Parafuso deslizante do quadril",s:"S4"},
-    {t:"Placa bloqueada de fêmur distal",s:"S5"},
-    {t:"Parafuso deslizante condilar",s:"S5"},
-    {t:"Banda de tensão de patela",s:"S5"},
-    {t:"Fixador externo transarticular de joelho",s:"S6"},
-    {t:"Haste de tíbia",s:"S6"},
-    {t:"Placa bloqueada de tíbia proximal",s:"S6"},
-    {t:"Placa bloqueada de tíbia distal",s:"S6"},
-    {t:"Fixador externo transarticular de tornozelo",s:"S7"},
-    {t:"Placa bloqueada de fíbula",s:"S7"},
+    {t:"Parafuso de compressão sacral",s:"S3"},{t:"Haste anterógrada de fêmur",s:"S4"},
+    {t:"Haste céfalo-medular",s:"S4"},{t:"Haste retrógrada de fêmur",s:"S4"},
+    {t:"Parafuso deslizante do quadril",s:"S4"},{t:"Placa bloqueada de fêmur distal",s:"S5"},
+    {t:"Parafuso deslizante condilar",s:"S5"},{t:"Banda de tensão de patela",s:"S5"},
+    {t:"Fixador externo transarticular de joelho",s:"S6"},{t:"Haste de tíbia",s:"S6"},
+    {t:"Placa bloqueada de tíbia proximal",s:"S6"},{t:"Placa bloqueada de tíbia distal",s:"S6"},
+    {t:"Fixador externo transarticular de tornozelo",s:"S7"},{t:"Placa bloqueada de fíbula",s:"S7"},
   ]},
   {mod:"Trauma de Coluna",semanas:"S8",topics:[
-    {t:"Fraturas cervicais altas",s:"S8"},
-    {t:"Fraturas cervicais baixas",s:"S8"},
-    {t:"Fraturas toracolombares",s:"S8"},
-    {t:"Trauma raquimedulares e síndromes medulares",s:"S8"},
+    {t:"Fraturas cervicais altas",s:"S8"},{t:"Fraturas cervicais baixas",s:"S8"},
+    {t:"Fraturas toracolombares",s:"S8"},{t:"Trauma raquimedulares e síndromes medulares",s:"S8"},
   ],hab:[]},
   {mod:"Trauma MMSS",semanas:"S9–S11",topics:[
-    {t:"Fraturas da clavícula",s:"S9"},
-    {t:"Luxação acromioclavicular e esternoclavicular",s:"S9"},
-    {t:"Fraturas da escápula",s:"S9"},
-    {t:"Fraturas do úmero proximal",s:"S9"},
-    {t:"Fraturas da diáfise do úmero",s:"S10"},
-    {t:"Fraturas da porção distal do úmero",s:"S10"},
-    {t:"Fraturas do cotovelo – parte 1",s:"S10"},
-    {t:"Fraturas do cotovelo – parte 2",s:"S10"},
-    {t:"Fraturas do antebraço",s:"S11"},
-    {t:"Fraturas do rádio distal",s:"S11"},
+    {t:"Fraturas da clavícula",s:"S9"},{t:"Luxação acromioclavicular e esternoclavicular",s:"S9"},
+    {t:"Fraturas da escápula",s:"S9"},{t:"Fraturas do úmero proximal",s:"S9"},
+    {t:"Fraturas da diáfise do úmero",s:"S10"},{t:"Fraturas da porção distal do úmero",s:"S10"},
+    {t:"Fraturas do cotovelo – parte 1",s:"S10"},{t:"Fraturas do cotovelo – parte 2",s:"S10"},
+    {t:"Fraturas do antebraço",s:"S11"},{t:"Fraturas do rádio distal",s:"S11"},
     {t:"Fraturas do carpo",s:"S11"},
   ],hab:[
-    {t:"Placa bloqueada de clavícula",s:"S9"},
-    {t:"Placa de úmero proximal",s:"S9"},
-    {t:"Fixador externo transarticular de cotovelo",s:"S10"},
-    {t:"Placa bloqueada de úmero distal",s:"S10"},
-    {t:"Placa bloqueada de olécrano",s:"S10"},
-    {t:"Banda de tensão de olécrano",s:"S10"},
+    {t:"Placa bloqueada de clavícula",s:"S9"},{t:"Placa de úmero proximal",s:"S9"},
+    {t:"Fixador externo transarticular de cotovelo",s:"S10"},{t:"Placa bloqueada de úmero distal",s:"S10"},
+    {t:"Placa bloqueada de olécrano",s:"S10"},{t:"Banda de tensão de olécrano",s:"S10"},
     {t:"Placa bloqueada de rádio distal",s:"S11"},
   ]},
   {mod:"Trauma Pediátrico",semanas:"S12–S13",topics:[
-    {t:"Fraturas dos MMSS pediátricas – parte 1",s:"S12"},
-    {t:"Fraturas dos MMSS pediátricas – parte 2",s:"S12"},
-    {t:"Fraturas dos MMSS pediátricas – parte 3",s:"S12"},
-    {t:"Fraturas dos MMII pediátricas – parte 1",s:"S13"},
-    {t:"Fraturas dos MMII pediátricas – parte 2",s:"S13"},
-    {t:"Fraturas dos MMII pediátricas – parte 3",s:"S13"},
+    {t:"Fraturas dos MMSS pediátricas – parte 1",s:"S12"},{t:"Fraturas dos MMSS pediátricas – parte 2",s:"S12"},
+    {t:"Fraturas dos MMSS pediátricas – parte 3",s:"S12"},{t:"Fraturas dos MMII pediátricas – parte 1",s:"S13"},
+    {t:"Fraturas dos MMII pediátricas – parte 2",s:"S13"},{t:"Fraturas dos MMII pediátricas – parte 3",s:"S13"},
   ],hab:[]},
   {mod:"Ombro e Cotovelo",semanas:"S14–S17",topics:[
-    {t:"Anatomia e radiologia do ombro",s:"S14"},
-    {t:"Anatomia e radiologia do cotovelo",s:"S14"},
-    {t:"Biomecânica e exame físico do ombro",s:"S14"},
-    {t:"Biomecânica e exame físico do cotovelo",s:"S14"},
-    {t:"Lesões do manguito rotador",s:"S15"},
-    {t:"Tendinite calcárea",s:"S15"},
-    {t:"Capsulite adesiva",s:"S15"},
-    {t:"Instabilidade glenoumeral",s:"S15"},
-    {t:"Artroscopia do ombro",s:"S16"},
-    {t:"Artroses e artroplastia do ombro",s:"S16"},
-    {t:"Lesões tendíneas do ombro e cotovelo",s:"S16"},
-    {t:"Instabilidade do cotovelo",s:"S16"},
-    {t:"Epicondilites",s:"S17"},
-    {t:"Rigidez do cotovelo",s:"S17"},
+    {t:"Anatomia e radiologia do ombro",s:"S14"},{t:"Anatomia e radiologia do cotovelo",s:"S14"},
+    {t:"Biomecânica e exame físico do ombro",s:"S14"},{t:"Biomecânica e exame físico do cotovelo",s:"S14"},
+    {t:"Lesões do manguito rotador",s:"S15"},{t:"Tendinite calcárea",s:"S15"},
+    {t:"Capsulite adesiva",s:"S15"},{t:"Instabilidade glenoumeral",s:"S15"},
+    {t:"Artroscopia do ombro",s:"S16"},{t:"Artroses e artroplastia do ombro",s:"S16"},
+    {t:"Lesões tendíneas do ombro e cotovelo",s:"S16"},{t:"Instabilidade do cotovelo",s:"S16"},
+    {t:"Epicondilites",s:"S17"},{t:"Rigidez do cotovelo",s:"S17"},
     {t:"Artroscopia e artroplastia do cotovelo",s:"S17"},
   ],hab:[
-    {t:"Artroscopia de ombro",s:"S16"},
-    {t:"Artroplastias de ombro",s:"S16"},
+    {t:"Artroscopia de ombro",s:"S16"},{t:"Artroplastias de ombro",s:"S16"},
   ]},
   {mod:"Joelho",semanas:"S18–S20",topics:[
-    {t:"Anatomia e radiografia do joelho",s:"S18"},
-    {t:"Biomecânica e exame físico do joelho",s:"S18"},
-    {t:"Artrose do joelho",s:"S19"},
-    {t:"Osteonecrose do joelho",s:"S19"},
-    {t:"Lesões da cartilagem do joelho",s:"S19"},
-    {t:"Lesões do LCA",s:"S20"},
-    {t:"Instabilidade patelo-femoral",s:"S20"},
-    {t:"Lesões meniscais",s:"S20"},
+    {t:"Anatomia e radiografia do joelho",s:"S18"},{t:"Biomecânica e exame físico do joelho",s:"S18"},
+    {t:"Artrose do joelho",s:"S19"},{t:"Osteonecrose do joelho",s:"S19"},
+    {t:"Lesões da cartilagem do joelho",s:"S19"},{t:"Lesões do LCA",s:"S20"},
+    {t:"Instabilidade patelo-femoral",s:"S20"},{t:"Lesões meniscais",s:"S20"},
     {t:"Lesões do LCP",s:"S20"},
   ],hab:[
-    {t:"Artroplastia total de joelho",s:"S19"},
-    {t:"Artroscopia de joelho",s:"S20"},
+    {t:"Artroplastia total de joelho",s:"S19"},{t:"Artroscopia de joelho",s:"S20"},
   ]},
   {mod:"Coluna",semanas:"S21–S22",topics:[
-    {t:"Anatomia e radiologia da coluna",s:"S21"},
-    {t:"Biomecânica e exame físico da coluna",s:"S21"},
-    {t:"Dor lombar",s:"S21"},
-    {t:"Escolioses",s:"S22"},
-    {t:"Espondilolisteses",s:"S22"},
-    {t:"Scheuermann e espondilite anquilosante",s:"S22"},
+    {t:"Anatomia e radiologia da coluna",s:"S21"},{t:"Biomecânica e exame físico da coluna",s:"S21"},
+    {t:"Dor lombar",s:"S21"},{t:"Escolioses",s:"S22"},
+    {t:"Espondilolisteses",s:"S22"},{t:"Scheuermann e espondilite anquilosante",s:"S22"},
   ],hab:[]},
   {mod:"Pé e Tornozelo",semanas:"S23–S24",topics:[
-    {t:"Anatomia e radiologia do pé e tornozelo",s:"S23"},
-    {t:"Biomecânica e exame físico do pé e tornozelo",s:"S23"},
-    {t:"Hálux valgo",s:"S23"},
-    {t:"Pé diabético e pé reumatoide",s:"S23"},
-    {t:"Deformidades dos pés",s:"S24"},
-    {t:"Coalisões tarsais",s:"S24"},
-    {t:"Lesões do aquiles",s:"S24"},
-    {t:"Miscelânea pé e tornozelo",s:"S24"},
+    {t:"Anatomia e radiologia do pé e tornozelo",s:"S23"},{t:"Biomecânica e exame físico do pé e tornozelo",s:"S23"},
+    {t:"Hálux valgo",s:"S23"},{t:"Pé diabético e pé reumatoide",s:"S23"},
+    {t:"Deformidades dos pés",s:"S24"},{t:"Coalisões tarsais",s:"S24"},
+    {t:"Lesões do aquiles",s:"S24"},{t:"Miscelânea pé e tornozelo",s:"S24"},
   ],hab:[]},
   {mod:"Quadril",semanas:"S25–S26",topics:[
-    {t:"Anatomia e radiologia do quadril",s:"S25"},
-    {t:"Biomecânica e exame físico do quadril",s:"S25"},
-    {t:"Impacto femoroacetabular",s:"S25"},
-    {t:"Coxartrose",s:"S26"},
-    {t:"Artroplastia total do quadril",s:"S26"},
-    {t:"Osteonecrose do quadril",s:"S26"},
-  ],hab:[
-    {t:"Artroplastia total de quadril",s:"S26"},
-  ]},
+    {t:"Anatomia e radiologia do quadril",s:"S25"},{t:"Biomecânica e exame físico do quadril",s:"S25"},
+    {t:"Impacto femoroacetabular",s:"S25"},{t:"Coxartrose",s:"S26"},
+    {t:"Artroplastia total do quadril",s:"S26"},{t:"Osteonecrose do quadril",s:"S26"},
+  ],hab:[{t:"Artroplastia total de quadril",s:"S26"}]},
   {mod:"Mão e Punho",semanas:"S27–S30",topics:[
-    {t:"Anatomia da mão e punho",s:"S27"},
-    {t:"Exame físico da mão e punho",s:"S27"},
-    {t:"Distrofia simpático reflexa",s:"S27"},
-    {t:"Dupuytren",s:"S27"},
-    {t:"Doença de Kienbock",s:"S28"},
-    {t:"Mão reumatoide",s:"S28"},
-    {t:"Tenossinovites",s:"S28"},
-    {t:"Lesão de tendões flexores e extensores",s:"S28"},
-    {t:"Paralisia braquial obstétrica",s:"S29"},
-    {t:"Lesão de plexo traumático",s:"S29"},
-    {t:"Síndromes compressivas – parte 1",s:"S29"},
-    {t:"Síndromes compressivas – parte 2",s:"S29"},
-    {t:"Deformidades congênitas dos MMSS – parte 1",s:"S30"},
-    {t:"Deformidades congênitas dos MMSS – parte 2",s:"S30"},
-    {t:"Instabilidade do carpo",s:"S30"},
-    {t:"Reimplante e amputações",s:"S30"},
+    {t:"Anatomia da mão e punho",s:"S27"},{t:"Exame físico da mão e punho",s:"S27"},
+    {t:"Distrofia simpático reflexa",s:"S27"},{t:"Dupuytren",s:"S27"},
+    {t:"Doença de Kienbock",s:"S28"},{t:"Mão reumatoide",s:"S28"},
+    {t:"Tenossinovites",s:"S28"},{t:"Lesão de tendões flexores e extensores",s:"S28"},
+    {t:"Paralisia braquial obstétrica",s:"S29"},{t:"Lesão de plexo traumático",s:"S29"},
+    {t:"Síndromes compressivas – parte 1",s:"S29"},{t:"Síndromes compressivas – parte 2",s:"S29"},
+    {t:"Deformidades congênitas dos MMSS – parte 1",s:"S30"},{t:"Deformidades congênitas dos MMSS – parte 2",s:"S30"},
+    {t:"Instabilidade do carpo",s:"S30"},{t:"Reimplante e amputações",s:"S30"},
     {t:"Rizartrose",s:"S30"},
-  ],hab:[
-    {t:"Suturas de tendão",s:"S28"},
-  ]},
+  ],hab:[{t:"Suturas de tendão",s:"S28"}]},
   {mod:"Tumores Ósseos",semanas:"S31–S32",topics:[
-    {t:"Princípios dos tumores",s:"S31"},
-    {t:"Lesões pseudotumorais",s:"S31"},
-    {t:"Tumores de partes moles",s:"S31"},
-    {t:"Tumores ósseos benignos",s:"S31"},
-    {t:"Tumores ósseos malignos – parte 1",s:"S32"},
-    {t:"Tumores ósseos malignos – parte 2",s:"S32"},
-    {t:"Tumores fibrosos",s:"S32"},
-    {t:"Metástases ósseas e mieloma múltiplo",s:"S32"},
+    {t:"Princípios dos tumores",s:"S31"},{t:"Lesões pseudotumorais",s:"S31"},
+    {t:"Tumores de partes moles",s:"S31"},{t:"Tumores ósseos benignos",s:"S31"},
+    {t:"Tumores ósseos malignos – parte 1",s:"S32"},{t:"Tumores ósseos malignos – parte 2",s:"S32"},
+    {t:"Tumores fibrosos",s:"S32"},{t:"Metástases ósseas e mieloma múltiplo",s:"S32"},
   ],hab:[]},
   {mod:"Ortopedia Pediátrica",semanas:"S33–S35",topics:[
-    {t:"Marcha",s:"S33"},
-    {t:"Mielomeningocele",s:"S33"},
-    {t:"Maus tratos",s:"S34"},
-    {t:"Osteogênese imperfeita",s:"S34"},
-    {t:"Mucopolissacaridoses",s:"S34"},
-    {t:"Displasia do desenvolvimento do quadril",s:"S35"},
-    {t:"Doença de Perthes",s:"S35"},
-    {t:"Epifisiólise",s:"S35"},
-    {t:"Sinovite transitória e artrite séptica",s:"S35"},
-    {t:"Tíbia vara de Blount",s:"S35"},
-    {t:"Deformidades congênitas dos MMII",s:"S35"},
-    {t:"Pé torto congênito",s:"S35"},
-    {t:"Sprengel",s:"S35"},
-    {t:"Torcicolo congênito",s:"S35"},
-  ],hab:[
-    {t:"Suspensório de Pavlik",s:"S35"},
-  ]},
+    {t:"Marcha",s:"S33"},{t:"Mielomeningocele",s:"S33"},
+    {t:"Maus tratos",s:"S34"},{t:"Osteogênese imperfeita",s:"S34"},
+    {t:"Mucopolissacaridoses",s:"S34"},{t:"Displasia do desenvolvimento do quadril",s:"S35"},
+    {t:"Doença de Perthes",s:"S35"},{t:"Epifisiólise",s:"S35"},
+    {t:"Sinovite transitória e artrite séptica",s:"S35"},{t:"Tíbia vara de Blount",s:"S35"},
+    {t:"Deformidades congênitas dos MMII",s:"S35"},{t:"Pé torto congênito",s:"S35"},
+    {t:"Sprengel",s:"S35"},{t:"Torcicolo congênito",s:"S35"},
+  ],hab:[{t:"Suspensório de Pavlik",s:"S35"}]},
 ];
 
-// ── Supabase helpers ──────────────────────────────────────────
-const API = SUPABASE_URL + '/rest/v1/progresso';
-const HEADERS = {
-  'apikey': SUPABASE_KEY,
-  'Authorization': 'Bearer ' + SUPABASE_KEY,
-  'Content-Type': 'application/json',
-  'Prefer': 'return=minimal'
-};
+// ══════════════════════════════════════════════
+// CRONOGRAMA — lógica
+// ══════════════════════════════════════════════
+let cronoState = {};
+let activeTab = 'all';
+let activeFilter = 'all';
+
+function sid(mod, type, idx) { return mod+'|'+type+'|'+idx; }
 
 function setSyncStatus(status, text) {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-lbl');
-  dot.className = 'sync-dot ' + status;
-  lbl.textContent = text;
-  document.getElementById('footer-status').textContent = text;
+  if (dot) { dot.className = 'sync-dot '+status; }
+  if (lbl) lbl.textContent = text;
+  const fs = document.getElementById('footer-status');
+  if (fs) fs.textContent = text;
 }
 
-async function dbLoad() {
+async function loadCronoProgress() {
   setSyncStatus('loading', 'carregando...');
   try {
-    const r = await fetch(API + '?select=item_id,feito', { headers: HEADERS });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (currentUser.id === 'master-allan') { cronoState = {}; setSyncStatus('ok', 'modo master'); renderCrono(); return; }
+    const r = await api('progresso_v2?usuario_id=eq.'+currentUser.id+'&select=item_id');
+    if (!r.ok) throw new Error();
     const rows = await r.json();
-    const s = {};
-    rows.forEach(row => { if (row.feito) s[row.item_id] = true; });
+    cronoState = {};
+    rows.forEach(row => { cronoState[row.item_id] = true; });
     setSyncStatus('ok', 'sincronizado');
-    return s;
   } catch(e) {
-    setSyncStatus('err', 'sem conexão');
-    // fallback to localStorage
-    try { const r = localStorage.getItem('ortop26_fallback'); return r ? JSON.parse(r) : {}; } catch(_) { return {}; }
+    setSyncStatus('err', 'erro ao carregar');
   }
+  renderCrono();
 }
 
-async function dbToggle(id, isChecked) {
+async function toggleItem(id) {
+  const wasChecked = !!cronoState[id];
+  if (wasChecked) { delete cronoState[id]; } else { cronoState[id] = true; }
+  renderCrono();
   setSyncStatus('loading', 'salvando...');
   try {
-    if (isChecked) {
-      const r = await fetch(API, {
+    if (!wasChecked) {
+      await api('progresso_v2', {
         method: 'POST',
-        headers: { ...HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify([{ item_id: id, feito: true, atualizado_em: new Date().toISOString() }])
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify([{
+          usuario_id: currentUser.id,
+          cronograma_id: null,
+          item_id: id,
+          atualizado_em: new Date().toISOString()
+        }])
       });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
     } else {
-      const r = await fetch(API + '?item_id=eq.' + encodeURIComponent(id), {
+      await api('progresso_v2?usuario_id=eq.'+currentUser.id+'&item_id=eq.'+encodeURIComponent(id), {
         method: 'DELETE',
-        headers: HEADERS
+        headers: { 'Prefer': 'return=minimal' }
       });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
     }
     setSyncStatus('ok', 'sincronizado');
   } catch(e) {
     setSyncStatus('err', 'erro ao salvar');
+    // rollback
+    if (!wasChecked) { delete cronoState[id]; } else { cronoState[id] = true; }
+    renderCrono();
   }
-  try { localStorage.setItem('ortop26_fallback', JSON.stringify(state)); } catch(_) {}
-}
-
-// ── App state ─────────────────────────────────────────────────
-let state = {};
-let activeTab = 'all';
-let activeFilter = 'all';
-
-function sid(mod, type, idx) { return mod + '|' + type + '|' + idx; }
-
-async function toggle(id) {
-  const nowChecked = !state[id];
-  if (nowChecked) { state[id] = true; } else { delete state[id]; }
-  render();
-  dbToggle(id, nowChecked);
-}
-
-async function resetAll() {
-  if (!confirm('Tem certeza? Isso vai apagar todo o progresso em todos os dispositivos.')) return;
-  state = {};
-  render();
-  try {
-    await fetch(API, {
-      method: 'DELETE',
-      headers: HEADERS
-    });
-  } catch(e) {}
-  try { localStorage.removeItem('ortop26_fallback'); } catch(_) {}
-  setSyncStatus('ok', 'resetado');
-}
-
-function setFilter(f, btn) {
-  activeFilter = f;
-  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
-
-function setTab(t) {
-  activeTab = t;
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
-  render();
 }
 
 function counts() {
   let tt=0,td=0,ht=0,hd=0,mc=0;
-  DATA.forEach(m => {
+  CRONO_DATA.forEach(m => {
     let mt=0,md=0,mh=0,mhd=0;
-    m.topics.forEach((_,i)=>{ const id=sid(m.mod,'t',i); tt++;mt++; if(state[id]){td++;md++;} });
-    m.hab.forEach((_,i)=>{ const id=sid(m.mod,'h',i); ht++;mh++; if(state[id]){hd++;mhd++;} });
-    if((mt+mh)>0 && (md+mhd)===(mt+mh)) mc++;
+    m.topics.forEach((_,i)=>{ const id=sid(m.mod,'t',i); tt++;mt++; if(cronoState[id]){td++;md++;} });
+    m.hab.forEach((_,i)=>{ const id=sid(m.mod,'h',i); ht++;mh++; if(cronoState[id]){hd++;mhd++;} });
+    if((mt+mh)>0&&(md+mhd)===(mt+mh)) mc++;
   });
   return {tt,td,ht,hd,mc,total:tt+ht,done:td+hd};
 }
@@ -507,143 +830,138 @@ function chkSVG() {
   return '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8.5 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
 
-function buildNav() {
-  const nav = document.getElementById('nav-inner');
-  nav.innerHTML = '';
-  const allBtn = document.createElement('button');
-  allBtn.className = 'nav-btn' + (activeTab==='all'?' active':'');
-  allBtn.dataset.tab = 'all';
-  allBtn.textContent = 'Todos';
-  allBtn.onclick = () => setTab('all');
-  nav.appendChild(allBtn);
-  DATA.forEach(m => {
-    const b = document.createElement('button');
-    b.className = 'nav-btn' + (activeTab===m.mod?' active':'');
-    b.dataset.tab = m.mod;
-    b.textContent = m.mod;
-    b.onclick = () => setTab(m.mod);
-    nav.appendChild(b);
-  });
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCrono();
 }
 
-function buildMini() {
+function setTab(t) {
+  activeTab = t;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===t));
+  renderCrono();
+}
+
+function renderCrono() {
+  // nav
+  const nav = document.getElementById('nav-inner');
+  if (!nav) return;
+  nav.innerHTML = '';
+  ['Todos', ...CRONO_DATA.map(m=>m.mod)].forEach((label, i) => {
+    const tabKey = i===0?'all':CRONO_DATA[i-1].mod;
+    const b = document.createElement('button');
+    b.className = 'nav-btn'+(activeTab===tabKey?' active':'');
+    b.dataset.tab = tabKey;
+    b.textContent = label;
+    b.onclick = () => setTab(tabKey);
+    nav.appendChild(b);
+  });
+
+  // mini bars
   const mini = document.getElementById('prog-mini');
   mini.innerHTML = '';
-  DATA.forEach(m => {
+  CRONO_DATA.forEach(m => {
     const total = m.topics.length + m.hab.length;
-    const done = m.topics.filter((_,i)=>state[sid(m.mod,'t',i)]).length
-               + m.hab.filter((_,i)=>state[sid(m.mod,'h',i)]).length;
+    const done = m.topics.filter((_,i)=>cronoState[sid(m.mod,'t',i)]).length
+               + m.hab.filter((_,i)=>cronoState[sid(m.mod,'h',i)]).length;
     const bar = document.createElement('div');
-    bar.className = 'prog-mini-bar' + (done===total&&total>0?' done':(done>0?' partial':''));
-    bar.title = m.mod + ': ' + done + '/' + total;
+    bar.className = 'prog-mini-bar'+(done===total&&total>0?' done':done>0?' partial':'');
+    bar.title = m.mod+': '+done+'/'+total;
     bar.onclick = () => setTab(m.mod);
     mini.appendChild(bar);
   });
-}
 
-function renderModBlock(m) {
-  const totalT = m.topics.length, totalH = m.hab.length;
-  const doneT = m.topics.filter((_,i)=>state[sid(m.mod,'t',i)]).length;
-  const doneH = m.hab.filter((_,i)=>state[sid(m.mod,'h',i)]).length;
-  const total = totalT + totalH, done = doneT + doneH;
-  const pct = total > 0 ? Math.round(done/total*100) : 0;
-
-  const filtT = m.topics.filter((_,i)=>{
-    const d = !!state[sid(m.mod,'t',i)];
-    return activeFilter==='all'||(activeFilter==='done'&&d)||(activeFilter==='pending'&&!d);
-  });
-  const filtH = m.hab.filter((_,i)=>{
-    const d = !!state[sid(m.mod,'h',i)];
-    return activeFilter==='all'||(activeFilter==='done'&&d)||(activeFilter==='pending'&&!d);
-  });
-
-  if (!filtT.length && !filtH.length) return null;
-
-  const wrap = document.createElement('div');
-  wrap.className = 'mod-block';
-  wrap.innerHTML = `
-    <div class="mod-head">
-      <div><div class="mod-title">${m.mod}</div><div class="mod-weeks">${m.semanas}</div></div>
-      <div class="mod-pct"><strong>${pct}%</strong>${done}/${total}</div>
-    </div>
-    <div class="mod-track"><div class="mod-track-fill" style="width:${pct}%"></div></div>
-  `;
-
-  if (filtT.length) {
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label';
-    lbl.textContent = 'TÓPICOS';
-    wrap.appendChild(lbl);
-    const grid = document.createElement('div');
-    grid.className = 'cards-grid';
-    m.topics.forEach((tp, i) => {
-      const id = sid(m.mod,'t',i);
-      const d = !!state[id];
-      if (activeFilter==='done'&&!d) return;
-      if (activeFilter==='pending'&&d) return;
-      const card = document.createElement('div');
-      card.className = 'topic-card'+(d?' done':'');
-      card.innerHTML = `<div class="chk">${chkSVG()}</div><div><div class="card-text">${tp.t}</div><div class="card-week">${tp.s}</div></div>`;
-      card.onclick = () => toggle(id);
-      grid.appendChild(card);
-    });
-    wrap.appendChild(grid);
-  }
-
-  if (filtH.length) {
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label hab-lbl';
-    lbl.textContent = '⚙ HABILIDADES PRÁTICAS';
-    wrap.appendChild(lbl);
-    const grid = document.createElement('div');
-    grid.className = 'cards-grid';
-    m.hab.forEach((h, i) => {
-      const id = sid(m.mod,'h',i);
-      const d = !!state[id];
-      if (activeFilter==='done'&&!d) return;
-      if (activeFilter==='pending'&&d) return;
-      const card = document.createElement('div');
-      card.className = 'hab-card'+(d?' done':'');
-      card.innerHTML = `<div class="chk">${chkSVG()}</div><div><div class="card-text">${h.t}</div><div class="card-week">${h.s}</div></div>`;
-      card.onclick = () => toggle(id);
-      grid.appendChild(card);
-    });
-    wrap.appendChild(grid);
-  }
-
-  return wrap;
-}
-
-function render() {
-  buildNav();
-  buildMini();
+  // stats
   const c = counts();
   document.getElementById('st-td').textContent = c.td+'/'+c.tt;
   document.getElementById('st-hd').textContent = c.hd+'/'+c.ht;
-  document.getElementById('st-pct').textContent = c.total>0?Math.round(c.done/c.total*100)+'%':'0%';
-  document.getElementById('st-mc').textContent = c.mc+'/'+DATA.length;
+  const pct = c.total>0?Math.round(c.done/c.total*100):0;
+  document.getElementById('st-pct').textContent = pct+'%';
+  document.getElementById('st-mc').textContent = c.mc+'/'+CRONO_DATA.length;
   document.getElementById('prog-lbl').textContent = c.done+' / '+c.total+' itens';
-  document.getElementById('prog-fill').style.width = (c.total>0?Math.round(c.done/c.total*100):0)+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
 
+  // main content
   const main = document.getElementById('main');
   main.innerHTML = '';
-  const toShow = activeTab==='all'?DATA:DATA.filter(m=>m.mod===activeTab);
+  const toShow = activeTab==='all'?CRONO_DATA:CRONO_DATA.filter(m=>m.mod===activeTab);
   let first = true;
+
   toShow.forEach(m => {
-    const el = renderModBlock(m);
-    if (el) {
-      if (!first) { const d=document.createElement('div'); d.className='divider'; main.appendChild(d); }
-      main.appendChild(el);
-      first = false;
+    const totalT=m.topics.length, totalH=m.hab.length;
+    const doneT=m.topics.filter((_,i)=>cronoState[sid(m.mod,'t',i)]).length;
+    const doneH=m.hab.filter((_,i)=>cronoState[sid(m.mod,'h',i)]).length;
+    const total=totalT+totalH, done=doneT+doneH;
+    const mpct=total>0?Math.round(done/total*100):0;
+
+    const filtT=m.topics.filter((_,i)=>{const d=!!cronoState[sid(m.mod,'t',i)];return activeFilter==='all'||(activeFilter==='done'&&d)||(activeFilter==='pending'&&!d);});
+    const filtH=m.hab.filter((_,i)=>{const d=!!cronoState[sid(m.mod,'h',i)];return activeFilter==='all'||(activeFilter==='done'&&d)||(activeFilter==='pending'&&!d);});
+    if (!filtT.length&&!filtH.length) return;
+
+    if (!first){const dv=document.createElement('div');dv.className='divider';main.appendChild(dv);}
+    first=false;
+
+    const wrap=document.createElement('div');
+    wrap.className='mod-block';
+    wrap.innerHTML=`<div class="mod-head"><div><div class="mod-title">${m.mod}</div><div class="mod-weeks">${m.semanas}</div></div><div class="mod-pct"><strong>${mpct}%</strong>${done}/${total}</div></div><div class="mod-track"><div class="mod-track-fill" style="width:${mpct}%"></div></div>`;
+
+    if(filtT.length){
+      const lbl=document.createElement('div');lbl.className='section-label';lbl.textContent='TÓPICOS';wrap.appendChild(lbl);
+      const grid=document.createElement('div');grid.className='cards-grid';
+      m.topics.forEach((tp,i)=>{
+        const id=sid(m.mod,'t',i); const d=!!cronoState[id];
+        if(activeFilter==='done'&&!d||activeFilter==='pending'&&d) return;
+        const card=document.createElement('div');
+        card.className='topic-card'+(d?' done':'');
+        card.innerHTML=`<div class="chk">${chkSVG()}</div><div><div class="card-text">${tp.t}</div><div class="card-week">${tp.s}</div></div>`;
+        card.onclick=()=>toggleItem(id);
+        grid.appendChild(card);
+      });
+      wrap.appendChild(grid);
     }
+
+    if(filtH.length){
+      const lbl=document.createElement('div');lbl.className='section-label hab-lbl';lbl.textContent='⚙ HABILIDADES PRÁTICAS';wrap.appendChild(lbl);
+      const grid=document.createElement('div');grid.className='cards-grid';
+      m.hab.forEach((h,i)=>{
+        const id=sid(m.mod,'h',i); const d=!!cronoState[id];
+        if(activeFilter==='done'&&!d||activeFilter==='pending'&&d) return;
+        const card=document.createElement('div');
+        card.className='hab-card'+(d?' done':'');
+        card.innerHTML=`<div class="chk">${chkSVG()}</div><div><div class="card-text">${h.t}</div><div class="card-week">${h.s}</div></div>`;
+        card.onclick=()=>toggleItem(id);
+        grid.appendChild(card);
+      });
+      wrap.appendChild(grid);
+    }
+
+    main.appendChild(wrap);
   });
-  if (first) main.innerHTML = '<div class="empty">Nenhum item para mostrar com esse filtro.</div>';
+
+  if(first) main.innerHTML='<div class="empty">Nenhum item para mostrar.</div>';
 }
 
-// ── Boot ──────────────────────────────────────────────────────
-(async () => {
-  state = await dbLoad();
-  render();
+// ══════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════
+(function init() {
+  const session = loadSession();
+  if (session) {
+    currentUser = session;
+    document.getElementById('dash-username').textContent = currentUser.nome;
+    const hora = new Date().getHours();
+    const saud = hora<12?'Bom dia':hora<18?'Boa tarde':'Boa noite';
+    document.getElementById('dash-greeting').textContent = saud+', '+currentUser.nome+'! 👋';
+    goToDashboard();
+  } else {
+    showScreen('screen-login');
+  }
+  // Enter key nos inputs
+  ['login-senha','reg-senha2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if(e.key==='Enter') { id==='login-senha'?doLogin():doRegister(); } });
+  });
 })();
 </script>
 </body>
