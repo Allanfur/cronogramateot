@@ -460,10 +460,13 @@ const HEADERS = {
 };
 
 function api(path, opts = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
   return fetch(SB_URL + '/rest/v1/' + path, {
     ...opts,
+    signal: controller.signal,
     headers: { ...HEADERS, ...(opts.headers || {}) }
-  });
+  }).finally(() => clearTimeout(timer));
 }
 
 // ══════════════════════════════════════════════
