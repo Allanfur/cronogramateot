@@ -538,22 +538,20 @@ async function doLogin() {
   if (!nome || !senha) { setLoginError('Preencha todos os campos.'); return; }
 
   setLoginError('Entrando...');
-  const hash = await hashSenha(senha);
-
   try {
-    const r = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin');
+    const hash = await hashSenha(senha);
+    const url = SB_URL + '/rest/v1/usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin,senha_hash';
+    const r = await fetch(url, { headers: HEADERS });
     const rows = await r.json();
-    if (!rows.length) { setLoginError('Usuário não encontrado.'); return; }
 
-    // verify password
-    const r2 = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&senha_hash=eq.' + hash + '&select=id,nome,is_admin');
-    const matched = await r2.json();
-    if (!matched.length) { setLoginError('Senha incorreta.'); return; }
+    if (!Array.isArray(rows) || !rows.length) { setLoginError('Usuário não encontrado.'); return; }
+    if (rows[0].senha_hash !== hash) { setLoginError('Senha incorreta.'); return; }
 
-    saveSession(matched[0]);
+    const { senha_hash, ...user } = rows[0];
+    saveSession(user);
     enterDashboard();
   } catch(e) {
-    setLoginError('Erro de conexão. Tente novamente.');
+    setLoginError('Erro: ' + e.message);
   }
 }
 
