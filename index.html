@@ -543,8 +543,8 @@ async function doLogin() {
   setLoginError('Entrando...');
   try {
     const hash = await hashSenha(senha);
-    const url = SB_URL + '/rest/v1/usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin,senha_hash';
-    const r = await fetch(url, { headers: HEADERS });
+    const r = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin,senha_hash');
+    if (!r.ok) { setLoginError('Erro do servidor: ' + r.status); return; }
     const rows = await r.json();
 
     if (!Array.isArray(rows) || !rows.length) { setLoginError('Usuário não encontrado.'); return; }
@@ -554,7 +554,7 @@ async function doLogin() {
     saveSession(user);
     enterDashboard();
   } catch(e) {
-    setLoginError('Erro: ' + e.message);
+    setLoginError('Erro: ' + (e.name === 'AbortError' ? 'tempo esgotado — verifique sua conexão' : e.message));
   }
 }
 
