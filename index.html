@@ -554,7 +554,7 @@ async function doLogin() {
 
   setLoginError('Entrando...');
   try {
-    const hash = await hashSenha(senha);
+    const hash = hashSenha(senha);
     const r = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin,senha_hash');
     if (!r.ok) { setLoginError('Erro do servidor: ' + r.status); return; }
     const rows = await r.json();
@@ -581,7 +581,7 @@ async function doRegister() {
   if (codigo !== 'teot') { setLoginError('Código de convite inválido.'); return; }
 
   setLoginError('Criando conta...');
-  const hash = await hashSenha(senha);
+  const hash = hashSenha(senha);
 
   try {
     const r = await api('usuarios', {
@@ -590,12 +590,12 @@ async function doRegister() {
       body: JSON.stringify({ nome, senha_hash: hash })
     });
     if (r.status === 409) { setLoginError('Esse nome já está em uso.'); return; }
-    if (!r.ok) { setLoginError('Erro ao criar conta.'); return; }
+    if (!r.ok) { setLoginError('Erro ao criar conta: ' + r.status); return; }
     const rows = await r.json();
     saveSession(rows[0]);
     enterDashboard();
   } catch(e) {
-    setLoginError('Erro de conexão. Tente novamente.');
+    setLoginError('Erro: ' + (e.name === 'AbortError' ? 'tempo esgotado' : e.message));
   }
 }
 
