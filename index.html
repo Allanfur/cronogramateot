@@ -538,21 +538,9 @@ function api(path, opts = {}) {
 // ══════════════════════════════════════════════
 // HASH senha (SHA-256)
 // ══════════════════════════════════════════════
-function hashSenha(senha) {
-  // Simple hash function (djb2 + extras) — works on HTTP and HTTPS
-  let h1 = 5381, h2 = 52711;
-  for (let i = 0; i < senha.length; i++) {
-    const c = senha.charCodeAt(i);
-    h1 = Math.imul(h1 ^ c, 2654435761);
-    h2 = Math.imul(h2 ^ c, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
-  const hash = (4294967296 * (2097151 & h2) + (h1>>>0)).toString(16).padStart(16,'0');
-  // Mix with per-char accumulator for extra entropy
-  let acc = 0;
-  for (let i = 0; i < senha.length; i++) acc = ((acc << 5) - acc) + senha.charCodeAt(i);
-  return hash + Math.abs(acc).toString(16).padStart(8,'0') + senha.length.toString(16).padStart(4,'0');
+async function hashSenha(senha) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
 // ══════════════════════════════════════════════
@@ -618,9 +606,11 @@ async function doLogin() {
   const senha = document.getElementById('login-senha').value;
   if (!nome || !senha) { setLoginError('Preencha todos os campos.'); return; }
 
+  const btn = document.querySelector('#tab-login .btn-primary');
+  btn.disabled = true;
   setLoginError('Entrando...');
   try {
-    const hash = hashSenha(senha);
+    const hash = await hashSenha(senha);
     const r = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin,senha_hash');
     if (!r.ok) { setLoginError('Erro do servidor: ' + r.status); return; }
     const rows = await r.json();
@@ -633,6 +623,8 @@ async function doLogin() {
     enterDashboard();
   } catch(e) {
     setLoginError('Erro: ' + (e.name === 'AbortError' ? 'tempo esgotado — verifique sua conexão' : e.message));
+  } finally {
+    btn.disabled = false;
   }
 }
 
@@ -646,8 +638,10 @@ async function doRegister() {
   const codigo = document.getElementById('reg-codigo').value.trim().toLowerCase();
   if (codigo !== 'teot') { setLoginError('Código de convite inválido.'); return; }
 
+  const btn = document.querySelector('#tab-register .btn-primary');
+  btn.disabled = true;
   setLoginError('Criando conta...');
-  const hash = hashSenha(senha);
+  const hash = await hashSenha(senha);
 
   try {
     const r = await api('usuarios', {
@@ -662,6 +656,8 @@ async function doRegister() {
     enterDashboard();
   } catch(e) {
     setLoginError('Erro: ' + (e.name === 'AbortError' ? 'tempo esgotado' : e.message));
+  } finally {
+    btn.disabled = false;
   }
 }
 
@@ -1049,9 +1045,13 @@ setInterval(updateCountdown, 1000);
     showScreen('screen-login');
   }
   // Enter key nos inputs
-  ['login-senha','reg-senha2'].forEach(id => {
+  ['login-nome','login-senha'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('keydown', e => { if(e.key==='Enter') { id==='login-senha'?doLogin():doRegister(); } });
+    if (el) el.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  });
+  ['reg-nome','reg-senha','reg-senha2','reg-codigo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
   });
 })();
 </script>
