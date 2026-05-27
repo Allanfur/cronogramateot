@@ -636,10 +636,21 @@ async function doRegister() {
   if (!nome || !senha || !senha2) { setLoginError('Preencha todos os campos.'); return; }
   if (senha !== senha2) { setLoginError('As senhas não coincidem.'); return; }
   const codigo = document.getElementById('reg-codigo').value.trim().toLowerCase();
-  if (codigo !== 'teot') { setLoginError('Código de convite inválido.'); return; }
 
   const btn = document.querySelector('#tab-register .btn-primary');
   btn.disabled = true;
+  setLoginError('Verificando código...');
+
+  try {
+    const rc = await api('codigos_convite?codigo=eq.' + encodeURIComponent(codigo) + '&ativo=eq.true&select=codigo');
+    if (!rc.ok) { setLoginError('Erro ao verificar código.'); return; }
+    const codigos = await rc.json();
+    if (!codigos.length) { setLoginError('Código de convite inválido.'); return; }
+  } catch(e) {
+    setLoginError('Erro ao verificar código: ' + (e.name === 'AbortError' ? 'tempo esgotado' : e.message));
+    return;
+  }
+
   setLoginError('Criando conta...');
   const hash = await hashSenha(senha);
 
