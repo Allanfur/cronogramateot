@@ -4,1173 +4,243 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f172a">
-<title>TEOT — Área de Estudos</title>
+<title>TEOT — Login</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
 <style>
 :root {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface2: #273549;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.18);
-  --text: #f1f5f9;
-  --text2: #94a3b8;
-  --text3: #64748b;
-  --green: #10b981;
-  --green-bg: rgba(16,185,129,0.12);
-  --green-border: rgba(16,185,129,0.35);
-  --blue: #3b82f6;
-  --blue-bg: rgba(59,130,246,0.12);
-  --blue-border: rgba(59,130,246,0.35);
-  --red: #ef4444;
-  --radius: 12px;
-  --radius-sm: 8px;
+  --bg:#0f172a; --surface:#1e293b; --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.18); --text:#f1f5f9; --text2:#94a3b8;
+  --text3:#64748b; --green:#10b981; --red:#ef4444;
+  --radius:12px; --radius-sm:8px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-/* ── COUNTDOWN ── */
-.countdown-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-.countdown-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text3);
-  margin-bottom: 10px;
-}
-.countdown-grid {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-.countdown-unit {
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  min-width: 54px;
-}
-.countdown-num {
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--green);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.countdown-lbl {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 3px;
-}
-.countdown-sub {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 10px;
-}
-.countdown-sub span { color: var(--green); font-weight: 600; }
-
-/* ── SCREENS ── */
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: flex; flex-direction: column; }
-
-/* ── LOGIN ── */
-#screen-login {
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-}
-.login-box {
-  width: 100%;
-  max-width: 380px;
-}
-.login-logo {
-  text-align: center;
-  margin-bottom: 32px;
-}
-.login-logo-title {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--text);
-}
-.login-logo-title span { color: var(--green); }
-.login-logo-sub {
-  font-size: 13px;
-  color: var(--text3);
-  margin-top: 4px;
-}
-.login-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px 24px;
-}
-.login-tabs {
-  display: flex;
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  padding: 3px;
-  margin-bottom: 24px;
-}
-.login-tab {
-  flex: 1;
-  text-align: center;
-  font-size: 13px;
-  padding: 7px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--text3);
-  transition: all .2s;
-  border: none;
-  background: transparent;
-}
-.login-tab.active {
-  background: var(--surface);
-  color: var(--text);
-  font-weight: 600;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-.field { margin-bottom: 14px; }
-.field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; }
-.field input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 14px;
-  color: var(--text);
-  outline: none;
-  transition: border-color .2s;
-  -webkit-appearance: none;
-}
-.field input:focus { border-color: var(--green); }
-.btn-primary {
-  width: 100%;
-  background: var(--green);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 11px;
-  border-radius: var(--radius-sm);
-  border: none;
-  cursor: pointer;
-  transition: opacity .15s;
-  margin-top: 4px;
-}
-.btn-primary:active { opacity: 0.8; }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.login-error {
-  font-size: 12px;
-  color: var(--red);
-  text-align: center;
-  margin-top: 10px;
-  min-height: 18px;
-}
-.login-footer {
-  text-align: center;
-  font-size: 12px;
-  color: var(--text3);
-  margin-top: 20px;
-}
-
-/* ── DASHBOARD ── */
-#screen-dashboard {
-  flex-direction: column;
-}
-.dash-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-.dash-logo { font-size: 16px; font-weight: 800; color: var(--text); }
-.dash-logo span { color: var(--green); }
-.dash-user { display: flex; align-items: center; gap: 10px; }
-.dash-username { font-size: 13px; color: var(--text2); }
-.btn-logout {
-  font-size: 12px;
-  padding: 5px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text3);
-  cursor: pointer;
-  transition: all .15s;
-}
-.btn-logout:hover { color: var(--red); border-color: var(--red); }
-.dash-body { padding: 20px 16px 40px; max-width: 600px; margin: 0 auto; width: 100%; }
-.dash-greeting {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.dash-sub { font-size: 13px; color: var(--text3); margin-bottom: 24px; }
-.dash-section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text3);
-  margin-bottom: 12px;
-}
-.crono-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-  cursor: pointer;
-  transition: border-color .15s, transform .15s;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  text-decoration: none;
-}
-.crono-card:hover { border-color: var(--green); }
-.crono-card:active { transform: scale(0.98); }
-.crono-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: var(--green-bg);
-  border: 1px solid var(--green-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.crono-info { flex: 1; }
-.crono-title { font-size: 15px; font-weight: 700; color: var(--text); }
-.crono-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.crono-progress { margin-top: 10px; }
-.crono-progress-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 4px; }
-.crono-bar { height: 4px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
-.crono-bar-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .4s; }
-.crono-arrow {
-  font-size: 18px;
-  color: var(--text3);
-  flex-shrink: 0;
-}
-
-/* ── CRONOGRAMA ── */
-#screen-crono { flex-direction: column; }
-
-.crono-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.crono-header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.btn-back {
-  font-size: 13px;
-  color: var(--text2);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 0;
-}
-.btn-back:hover { color: var(--green); }
-.crono-header-title { font-size: 15px; font-weight: 700; color: var(--text); }
-.crono-header-right { display: flex; align-items: center; gap: 8px; }
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); transition: background .3s; }
-.sync-dot.ok { background: var(--green); }
-.sync-dot.err { background: var(--red); }
-.sync-dot.loading { background: #f59e0b; animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-.sync-lbl { font-size: 11px; color: var(--text3); }
-
-.stats-bar {
-  display: grid; grid-template-columns: repeat(4,1fr);
-  gap: 8px; padding: 12px 16px;
-  background: var(--bg); border-bottom: 1px solid var(--border);
-}
-.stat { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
-.stat-val { font-size: 18px; font-weight: 700; color: var(--text); }
-.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
-.prog-section { padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
-.prog-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
-.prog-track { height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
-.prog-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .4s ease; }
-.prog-mini { display: flex; gap: 3px; margin-top: 8px; }
-.prog-mini-bar { flex: 1; height: 4px; border-radius: 99px; background: var(--surface2); transition: background .3s; cursor: pointer; }
-.prog-mini-bar.done { background: var(--green); }
-.prog-mini-bar.partial { background: var(--blue); }
-.nav-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; background: var(--surface); border-bottom: 1px solid var(--border); }
-.nav-scroll::-webkit-scrollbar { display: none; }
-.nav-inner { display: flex; padding: 10px 16px; gap: 6px; white-space: nowrap; min-width: max-content; }
-.nav-btn { font-size: 13px; padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all .15s; }
-.nav-btn.active { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
-.filter-bar { padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
-.filter-lbl { font-size: 12px; color: var(--text3); }
-.seg { display: flex; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; flex: 1; }
-.seg-btn { flex: 1; font-size: 12px; padding: 6px 4px; border: none; background: transparent; color: var(--text2); cursor: pointer; transition: all .15s; text-align: center; }
-.seg-btn.active { background: var(--surface2); color: var(--text); font-weight: 600; }
-main { padding: 12px 16px 80px; }
-.mod-block { margin-bottom: 24px; }
-.mod-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
-.mod-title { font-size: 15px; font-weight: 700; color: var(--text); }
-.mod-weeks { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.mod-pct { font-size: 12px; color: var(--text3); text-align: right; flex-shrink: 0; }
-.mod-pct strong { font-size: 15px; font-weight: 700; color: var(--green); display: block; }
-.mod-track { height: 3px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 10px; }
-.mod-track-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .3s; }
-.section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 7px; }
-.section-label.hab-lbl { color: #60a5fa; margin-top: 10px; }
-.cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-@media (max-width: 380px) { .cards-grid { grid-template-columns: 1fr; } .stats-bar { grid-template-columns: repeat(2,1fr); } }
-@media (min-width: 600px) { .cards-grid { grid-template-columns: repeat(3,1fr); } }
-.topic-card, .hab-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 10px;
-  cursor: pointer; display: flex; align-items: flex-start; gap: 8px;
-  transition: border-color .15s, background .15s;
-  -webkit-user-select: none; user-select: none;
-}
-.topic-card:active, .hab-card:active { opacity: 0.75; transform: scale(0.98); }
-.topic-card.done { background: var(--green-bg); border-color: var(--green-border); }
-.hab-card.done { background: var(--blue-bg); border-color: var(--blue-border); }
-.chk { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border2); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
-.topic-card.done .chk { background: var(--green); border-color: var(--green); }
-.hab-card.done .chk { background: var(--blue); border-color: var(--blue); }
-.chk svg { display: none; }
-.done .chk svg { display: block; }
-.card-text { font-size: 13px; color: var(--text); line-height: 1.35; }
-.topic-card.done .card-text { color: #6ee7b7; }
-.hab-card.done .card-text { color: #93c5fd; }
-.card-week { font-size: 10px; color: var(--text3); margin-top: 3px; }
-.topic-card.done .card-week { color: #34d399; }
-.hab-card.done .card-week { color: #60a5fa; }
-.divider { height: 1px; background: var(--border); margin: 20px 0; }
-.empty { text-align: center; padding: 40px 16px; color: var(--text3); font-size: 14px; }
-.crono-footer {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--surface); border-top: 1px solid var(--border);
-  padding: 10px 16px; display: flex; justify-content: center;
-  align-items: center; gap: 16px; font-size: 11px; color: var(--text3);
-}
-.footer-dot { width: 6px; height: 6px; border-radius: 50%; }
-.footer-dot.green { background: var(--green); }
-.footer-dot.blue { background: var(--blue); }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;
+  display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.box{width:100%;max-width:380px}
+.logo{text-align:center;margin-bottom:32px}
+.logo-title{font-size:28px;font-weight:800;letter-spacing:-0.5px}
+.logo-title span{color:var(--green)}
+.logo-sub{font-size:13px;color:var(--text3);margin-top:4px}
+.countdown-box{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:20px;text-align:center}
+.cd-title{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:10px}
+.cd-grid{display:flex;justify-content:center;gap:8px}
+.cd-unit{background:var(--bg);border-radius:var(--radius-sm);padding:8px 10px;min-width:54px}
+.cd-num{font-size:26px;font-weight:800;color:var(--green);line-height:1;font-variant-numeric:tabular-nums}
+.cd-lbl{font-size:10px;color:var(--text3);margin-top:3px}
+.cd-sub{font-size:11px;color:var(--text3);margin-top:10px}
+.cd-sub span{color:var(--green);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px}
+.tabs{display:flex;background:var(--bg);border-radius:var(--radius-sm);padding:3px;margin-bottom:24px}
+.tab{flex:1;text-align:center;font-size:12px;padding:7px;border-radius:6px;cursor:pointer;
+  color:var(--text3);transition:all .2s;border:none;background:transparent}
+.tab.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.field input{width:100%;background:var(--bg);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);
+  outline:none;transition:border-color .2s;-webkit-appearance:none}
+.field input:focus{border-color:var(--green)}
+.btn{width:100%;background:var(--green);color:#fff;font-size:14px;font-weight:700;
+  padding:11px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  transition:opacity .15s;margin-top:4px}
+.btn:active{opacity:.8}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.error{font-size:12px;color:var(--red);text-align:center;margin-top:10px;min-height:18px}
+.footer{text-align:center;font-size:12px;color:var(--text3);margin-top:20px}
+.hint{font-size:12px;color:var(--text3);margin-bottom:14px}
 </style>
 </head>
 <body>
+<div class="box">
+  <div class="logo">
+    <div class="logo-title">TEOT <span>Estudos</span></div>
+    <div class="logo-sub">Desenvolvido pelo Allan Furtado</div>
+  </div>
 
-<!-- ══════════════ SCREEN: LOGIN ══════════════ -->
-<div class="screen active" id="screen-login">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="login-logo-title">TEOT <span>Estudos</span></div>
-      <div class="login-logo-sub">Desenvolvido pelo Allan Furtado</div>
+  <div class="countdown-box">
+    <div class="cd-title">⏳ FALTAM PARA A PROVA DO TARO</div>
+    <div class="cd-grid">
+      <div class="cd-unit"><div class="cd-num" id="cd-d">--</div><div class="cd-lbl">dias</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-h">--</div><div class="cd-lbl">horas</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-m">--</div><div class="cd-lbl">min</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-s">--</div><div class="cd-lbl">seg</div></div>
     </div>
-    <div class="countdown-box">
-      <div class="countdown-title">⏳ FALTAM PARA A PROVA DO TARO</div>
-      <div class="countdown-grid">
-        <div class="countdown-unit"><div class="countdown-num" id="cd-dias-login">--</div><div class="countdown-lbl">dias</div></div>
-        <div class="countdown-unit"><div class="countdown-num" id="cd-horas-login">--</div><div class="countdown-lbl">horas</div></div>
-        <div class="countdown-unit"><div class="countdown-num" id="cd-min-login">--</div><div class="countdown-lbl">min</div></div>
-        <div class="countdown-unit"><div class="countdown-num" id="cd-seg-login">--</div><div class="countdown-lbl">seg</div></div>
-      </div>
-      <div class="countdown-sub">Prova em <span>12/08/2026</span></div>
+    <div class="cd-sub">Prova em <span>12/08/2026</span></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Entrar</button>
+      <button class="tab" onclick="switchTab('register')">Cadastrar</button>
+      <button class="tab" onclick="switchTab('reset')" style="font-size:11px">Resetar</button>
     </div>
-    <div class="login-card">
-      <div class="login-tabs">
-        <button class="login-tab active" onclick="switchTab('login')">Entrar</button>
-        <button class="login-tab" onclick="switchTab('register')">Cadastrar</button>
-        <button class="login-tab" onclick="switchTab('reset')" style="font-size:11px">Resetar</button>
-      </div>
-      <div id="tab-login">
-        <div class="field"><label>Nome</label><input id="login-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
-        <div class="field"><label>Senha</label><input id="login-senha" type="password" placeholder="••••••••" autocomplete="current-password"></div>
-        <button class="btn-primary" onclick="doLogin()">Entrar</button>
-      </div>
-      <div id="tab-register" style="display:none">
-        <div class="field"><label>Nome</label><input id="reg-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
-        <div class="field"><label>Senha</label><input id="reg-senha" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
-        <div class="field"><label>Confirmar senha</label><input id="reg-senha2" type="password" placeholder="Repita a senha" autocomplete="new-password"></div>
-        <div class="field"><label>Código de convite</label><input id="reg-codigo" type="text" placeholder="Código de acesso" autocomplete="off"></div>
-        <button class="btn-primary" onclick="doRegister()">Criar conta</button>
-      </div>
-      <div id="tab-reset" style="display:none">
-        <p style="font-size:12px;color:var(--text3);margin-bottom:14px">Redefina sua senha usando o código de convite.</p>
-        <div class="field"><label>Nome</label><input id="rst-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
-        <div class="field"><label>Nova senha</label><input id="rst-senha" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
-        <div class="field"><label>Confirmar nova senha</label><input id="rst-senha2" type="password" placeholder="Repita a nova senha" autocomplete="new-password"></div>
-        <div class="field"><label>Código de convite</label><input id="rst-codigo" type="text" placeholder="Código de acesso" autocomplete="off"></div>
-        <button class="btn-primary" onclick="doReset()">Redefinir senha</button>
-      </div>
-      <div class="login-error" id="login-error"></div>
+
+    <!-- LOGIN -->
+    <div id="tab-login">
+      <div class="field"><label>Nome</label>
+        <input id="l-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
+      <div class="field"><label>Senha</label>
+        <input id="l-senha" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn" onclick="doLogin()">Entrar</button>
     </div>
-    <div class="login-footer">Bons estudos 📚</div>
-  </div>
-</div>
 
-<!-- ══════════════ SCREEN: DASHBOARD ══════════════ -->
-<div class="screen" id="screen-dashboard">
-  <div class="dash-header">
-    <div class="dash-logo">TEOT <span>Estudos</span></div>
-    <div class="dash-user">
-      <span class="dash-username" id="dash-username"></span>
-      <button class="btn-logout" onclick="doLogout()">Sair</button>
+    <!-- CADASTRAR -->
+    <div id="tab-register" style="display:none">
+      <div class="field"><label>Nome</label>
+        <input id="r-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
+      <div class="field"><label>Senha</label>
+        <input id="r-senha" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+      <div class="field"><label>Confirmar senha</label>
+        <input id="r-senha2" type="password" placeholder="Repita a senha" autocomplete="new-password"></div>
+      <div class="field"><label>Código de convite</label>
+        <input id="r-codigo" type="text" placeholder="Código de acesso" autocomplete="off"></div>
+      <button class="btn" onclick="doRegister()">Criar conta</button>
     </div>
-  </div>
-  <div class="dash-body">
-    <div class="dash-greeting" id="dash-greeting">Olá! 👋</div>
-    <div class="dash-sub">Escolha um cronograma para estudar</div>
-    <div class="dash-section-label">CRONOGRAMAS DISPONÍVEIS</div>
-    <div class="crono-card" onclick="goToCrono()">
-      <div class="crono-icon">📋</div>
-      <div class="crono-info">
-        <div class="crono-title">Cronograma TEOT</div>
-        <div class="crono-desc">35 semanas</div>
-        <div class="crono-progress">
-          <div class="crono-progress-row">
-            <span>Seu progresso</span>
-            <span id="dash-pct">0%</span>
-          </div>
-          <div class="crono-bar"><div class="crono-bar-fill" id="dash-bar" style="width:0%"></div></div>
-        </div>
-      </div>
-      <div class="crono-arrow">›</div>
+
+    <!-- RESETAR -->
+    <div id="tab-reset" style="display:none">
+      <p class="hint">Redefina sua senha usando o código de convite.</p>
+      <div class="field"><label>Nome</label>
+        <input id="rst-nome" type="text" placeholder="Seu nome" autocomplete="username"></div>
+      <div class="field"><label>Nova senha</label>
+        <input id="rst-senha" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+      <div class="field"><label>Confirmar nova senha</label>
+        <input id="rst-senha2" type="password" placeholder="Repita a nova senha" autocomplete="new-password"></div>
+      <div class="field"><label>Código de convite</label>
+        <input id="rst-codigo" type="text" placeholder="Código de acesso" autocomplete="off"></div>
+      <button class="btn" onclick="doReset()">Redefinir senha</button>
     </div>
-  </div>
-</div>
 
-<!-- ══════════════ SCREEN: CRONOGRAMA ══════════════ -->
-<div class="screen" id="screen-crono">
-  <div class="crono-header">
-    <div class="crono-header-top">
-      <button class="btn-back" onclick="goToDashboard()">‹ Painel</button>
-      <div class="crono-header-title">Cronograma TEOT</div>
-      <div class="crono-header-right">
-        <div class="sync-dot loading" id="sync-dot"></div>
-        <span class="sync-lbl" id="sync-lbl">...</span>
-      </div>
-    </div>
+    <div class="error" id="error"></div>
   </div>
-
-  <div class="stats-bar">
-    <div class="stat"><div class="stat-val" id="st-td">0</div><div class="stat-lbl">Tópicos</div></div>
-    <div class="stat"><div class="stat-val" id="st-hd">0</div><div class="stat-lbl">Habilidades</div></div>
-    <div class="stat"><div class="stat-val" id="st-pct">0%</div><div class="stat-lbl">Progresso</div></div>
-    <div class="stat"><div class="stat-val" id="st-mc">0</div><div class="stat-lbl">Módulos</div></div>
-  </div>
-
-  <div class="prog-section">
-    <div class="prog-row"><span>Progresso geral</span><span id="prog-lbl">0 / 0 itens</span></div>
-    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-    <div class="prog-mini" id="prog-mini"></div>
-  </div>
-
-  <div class="countdown-box" style="margin:10px 16px 0;text-align:center">
-    <div class="countdown-title">⏳ FALTAM PARA A PROVA DO TARO</div>
-    <div class="countdown-grid" style="justify-content:center">
-      <div class="countdown-unit"><div class="countdown-num" id="cd-dias">--</div><div class="countdown-lbl">dias</div></div>
-      <div class="countdown-unit"><div class="countdown-num" id="cd-horas">--</div><div class="countdown-lbl">horas</div></div>
-      <div class="countdown-unit"><div class="countdown-num" id="cd-min">--</div><div class="countdown-lbl">min</div></div>
-      <div class="countdown-unit"><div class="countdown-num" id="cd-seg">--</div><div class="countdown-lbl">seg</div></div>
-    </div>
-    <div class="countdown-sub">Prova em <span>12/08/2026</span></div>
-  </div>
-  <div class="nav-scroll"><div class="nav-inner" id="nav-inner"></div></div>
-
-  <div class="filter-bar">
-    <span class="filter-lbl">Filtrar:</span>
-    <div class="seg">
-      <button class="seg-btn active" onclick="setFilter('all',this)">Todos</button>
-      <button class="seg-btn" onclick="setFilter('pending',this)">Pendentes</button>
-      <button class="seg-btn" onclick="setFilter('done',this)">Feitos</button>
-    </div>
-  </div>
-
-  <main id="main"></main>
-
-  <div class="crono-footer">
-    <span class="footer-dot green"></span><span>Tópico</span>
-    <span class="footer-dot blue"></span><span>Habilidade</span>
-    <span id="footer-status" style="color:var(--text3)">...</span>
-  </div>
+  <div class="footer">Bons estudos 📚</div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-// CONFIG SUPABASE
-// ══════════════════════════════════════════════
-const SB_URL  = 'https://piziokskqrrnxahabhbt.supabase.co';
-const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpemlva3NrcXJybnhhaGFiaGJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTY5NzMsImV4cCI6MjA5NTEzMjk3M30.elc7_qtJcm-HL4l8tIPvH9KNQMLMVEg9Ga2jwJPhA7g';
-const HEADERS = {
-  'apikey': SB_KEY,
-  'Authorization': 'Bearer ' + SB_KEY,
-  'Content-Type': 'application/json',
-  'Prefer': 'return=representation'
-};
+const SB_URL = 'https://piziokskqrrnxahabhbt.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpemlva3NrcXJybnhhaGFiaGJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTY5NzMsImV4cCI6MjA5NTEzMjk3M30.elc7_qtJcm-HL4l8tIPvH9KNQMLMVEg9Ga2jwJPhA7g';
+const H = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
 
-function api(path, opts = {}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
-  return fetch(SB_URL + '/rest/v1/' + path, {
-    ...opts,
-    signal: controller.signal,
-    headers: { ...HEADERS, ...(opts.headers || {}) }
-  }).finally(() => clearTimeout(timer));
+function api(path, opts={}) {
+  const c=new AbortController(), t=setTimeout(()=>c.abort(),8000);
+  return fetch(SB_URL+'/rest/v1/'+path,{...opts,signal:c.signal,headers:{...H,...(opts.headers||{})}}).finally(()=>clearTimeout(t));
 }
 
-// ══════════════════════════════════════════════
-// HASH senha — crypto.subtle (HTTPS) ou js-sha256 (CDN fallback)
-// ══════════════════════════════════════════════
-async function hashSenha(senha) {
-  if (window.crypto && window.crypto.subtle) {
+async function hashSenha(s) {
+  if (window.crypto?.subtle) {
     try {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    } catch(e) {}
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    } catch(e){}
   }
-  if (typeof sha256 === 'function') return sha256(senha);
-  throw new Error('SHA-256 indisponível. Verifique sua conexão.');
+  return sha256(s);
 }
 
-// SHA-256 puro JS legado (não usado, mantido por segurança)
-function sha256JS_UNUSED(str) {
-  function rr(v,n){return(v>>>n)|(v<<(32-n));}
-  const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
-  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
-           0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
-           0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
-           0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
-           0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
-           0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
-           0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
-           0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
-  const bytes=[...new TextEncoder().encode(str)];
-  bytes.push(0x80);
-  while(bytes.length%64!==56) bytes.push(0);
-  const bits=str.length*8;
-  for(let i=7;i>=0;i--) bytes.push((bits/Math.pow(2,i*8))&0xff);
-  for(let i=0;i<bytes.length;i+=64){
-    const w=[];
-    for(let j=0;j<16;j++) w.push((bytes[i+j*4]<<24)|(bytes[i+j*4+1]<<16)|(bytes[i+j*4+2]<<8)|bytes[i+j*4+3]);
-    for(let j=16;j<64;j++){
-      const s0=rr(w[j-15],7)^rr(w[j-15],18)^(w[j-15]>>>3);
-      const s1=rr(w[j-2],17)^rr(w[j-2],19)^(w[j-2]>>>10);
-      w.push((w[j-16]+s0+w[j-7]+s1)>>>0);
-    }
-    let [a,b,c,d,e,f,g,h]=[...H];
-    for(let j=0;j<64;j++){
-      const S1=rr(e,6)^rr(e,11)^rr(e,25);
-      const ch=(e&f)^(~e&g);
-      const t1=(h+S1+ch+K[j]+w[j])>>>0;
-      const S0=rr(a,2)^rr(a,13)^rr(a,22);
-      const maj=(a&b)^(a&c)^(b&c);
-      const t2=(S0+maj)>>>0;
-      h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
-    }
-    H[0]=(H[0]+a)>>>0;H[1]=(H[1]+b)>>>0;H[2]=(H[2]+c)>>>0;H[3]=(H[3]+d)>>>0;
-    H[4]=(H[4]+e)>>>0;H[5]=(H[5]+f)>>>0;H[6]=(H[6]+g)>>>0;H[7]=(H[7]+h)>>>0;
-  }
-  return H.map(v=>v.toString(16).padStart(8,'0')).join('');
-}
+function setErr(msg) { document.getElementById('error').textContent = msg; }
 
-// ══════════════════════════════════════════════
-// SESSÃO
-// ══════════════════════════════════════════════
-let currentUser = null;
-
-function saveSession(user) {
-  currentUser = user;
-  localStorage.setItem('teot_session', JSON.stringify(user));
-}
-function loadSession() {
-  try { const s = localStorage.getItem('teot_session'); return s ? JSON.parse(s) : null; } catch { return null; }
-}
-function clearSession() {
-  currentUser = null;
-  localStorage.removeItem('teot_session');
-}
-
-// ══════════════════════════════════════════════
-// NAVEGAÇÃO
-// ══════════════════════════════════════════════
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function goToDashboard() {
-  showScreen('screen-dashboard');
-  loadDashboardProgress();
-}
-
-function goToCrono() {
-  showScreen('screen-crono');
-  cronoState = {};
-  activeTab = 'all';
-  activeFilter = 'all';
-  loadCronoProgress();
-}
-
-function doLogout() {
-  clearSession();
-  showScreen('screen-login');
-}
-
-// ══════════════════════════════════════════════
-// LOGIN / REGISTRO
-// ══════════════════════════════════════════════
 function switchTab(tab) {
-  document.querySelectorAll('.login-tab').forEach((b,i) => {
-    b.classList.toggle('active',
-      (i===0&&tab==='login')||(i===1&&tab==='register')||(i===2&&tab==='reset'));
+  ['login','register','reset'].forEach((t,i)=>{
+    document.querySelectorAll('.tab')[i].classList.toggle('active', t===tab);
+    document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none';
   });
-  document.getElementById('tab-login').style.display   = tab === 'login'    ? '' : 'none';
-  document.getElementById('tab-register').style.display = tab === 'register' ? '' : 'none';
-  document.getElementById('tab-reset').style.display   = tab === 'reset'    ? '' : 'none';
-  setLoginError('');
-}
-
-async function doReset() {
-  const nome   = document.getElementById('rst-nome').value.trim();
-  const senha  = document.getElementById('rst-senha').value;
-  const senha2 = document.getElementById('rst-senha2').value;
-  const codigo = document.getElementById('rst-codigo').value.trim().toLowerCase();
-
-  if (!nome || !senha || !senha2 || !codigo) { setLoginError('Preencha todos os campos.'); return; }
-  if (senha.length < 6) { setLoginError('Senha deve ter ao menos 6 caracteres.'); return; }
-  if (senha !== senha2) { setLoginError('As senhas não coincidem.'); return; }
-
-  const btn = document.querySelector('#tab-reset .btn-primary');
-  btn.disabled = true;
-  setLoginError('Verificando código...');
-
-  try {
-    const rc = await api('codigos_convite?codigo=eq.' + encodeURIComponent(codigo) + '&ativo=eq.true&select=codigo');
-    if (!rc.ok) { setLoginError('Erro ao verificar código.'); btn.disabled=false; return; }
-    const codigos = await rc.json();
-    if (!codigos.length) { setLoginError('Código de convite inválido.'); btn.disabled=false; return; }
-  } catch(e) {
-    setLoginError('Erro: ' + (e.name==='AbortError' ? 'tempo esgotado' : e.message));
-    btn.disabled=false; return;
-  }
-
-  setLoginError('Verificando usuário...');
-  try {
-    const ru = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id');
-    if (!ru.ok) { setLoginError('Erro do servidor: ' + ru.status); btn.disabled=false; return; }
-    const users = await ru.json();
-    if (!users.length) { setLoginError('Usuário não encontrado.'); btn.disabled=false; return; }
-
-    setLoginError('Atualizando senha...');
-    const hash = await hashSenha(senha);
-    const rp = await api('usuarios?id=eq.' + users[0].id, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ senha_hash: hash })
-    });
-    if (!rp.ok) { setLoginError('Erro ao atualizar senha: ' + rp.status); btn.disabled=false; return; }
-
-    setLoginError('');
-    alert('Senha redefinida com sucesso! Faça login com a nova senha.');
-    switchTab('login');
-    document.getElementById('login-nome').value = nome;
-  } catch(e) {
-    setLoginError('Erro: ' + (e.name==='AbortError' ? 'tempo esgotado' : e.message));
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-function setLoginError(msg) {
-  document.getElementById('login-error').textContent = msg;
+  setErr('');
 }
 
 async function doLogin() {
-  const nome = document.getElementById('login-nome').value.trim();
-  const senha = document.getElementById('login-senha').value;
-  if (!nome || !senha) { setLoginError('Preencha todos os campos.'); return; }
-
-  const btn = document.querySelector('#tab-login .btn-primary');
-  btn.disabled = true;
-  setLoginError('Entrando...');
+  const nome=document.getElementById('l-nome').value.trim();
+  const senha=document.getElementById('l-senha').value;
+  if (!nome||!senha){setErr('Preencha todos os campos.');return;}
+  const btn=document.querySelector('#tab-login .btn');
+  btn.disabled=true; setErr('Entrando...');
   try {
-    const hash = await hashSenha(senha);
-    const r = await api('usuarios?nome=eq.' + encodeURIComponent(nome) + '&select=id,nome,is_admin,senha_hash');
-    if (!r.ok) { setLoginError('Erro do servidor: ' + r.status); return; }
-    const rows = await r.json();
-
-    if (!Array.isArray(rows) || !rows.length) { setLoginError('Usuário não encontrado.'); return; }
-    if (rows[0].senha_hash !== hash) { setLoginError('Senha incorreta.'); return; }
-
-    const { senha_hash, ...user } = rows[0];
-    saveSession(user);
-    enterDashboard();
-  } catch(e) {
-    setLoginError('Erro: ' + (e.name === 'AbortError' ? 'tempo esgotado — verifique sua conexão' : e.message));
-  } finally {
-    btn.disabled = false;
-  }
+    const hash=await hashSenha(senha);
+    const r=await api('usuarios?nome=eq.'+encodeURIComponent(nome)+'&select=id,nome,is_admin,senha_hash');
+    if(!r.ok){setErr('Erro do servidor: '+r.status);return;}
+    const rows=await r.json();
+    if(!rows.length){setErr('Usuário não encontrado.');return;}
+    if(rows[0].senha_hash!==hash){setErr('Senha incorreta.');return;}
+    const {senha_hash,...user}=rows[0];
+    localStorage.setItem('teot_session',JSON.stringify(user));
+    window.location.href='dashboard.html';
+  } catch(e){setErr('Erro: '+(e.name==='AbortError'?'tempo esgotado':e.message));}
+  finally{btn.disabled=false;}
 }
 
 async function doRegister() {
-  const nome = document.getElementById('reg-nome').value.trim();
-  const senha = document.getElementById('reg-senha').value;
-  const senha2 = document.getElementById('reg-senha2').value;
-
-  if (!nome || !senha || !senha2) { setLoginError('Preencha todos os campos.'); return; }
-  if (senha !== senha2) { setLoginError('As senhas não coincidem.'); return; }
-  const codigo = document.getElementById('reg-codigo').value.trim().toLowerCase();
-
-  const btn = document.querySelector('#tab-register .btn-primary');
-  btn.disabled = true;
-  setLoginError('Verificando código...');
-
+  const nome=document.getElementById('r-nome').value.trim();
+  const senha=document.getElementById('r-senha').value;
+  const senha2=document.getElementById('r-senha2').value;
+  const codigo=document.getElementById('r-codigo').value.trim().toLowerCase();
+  if(!nome||!senha||!senha2||!codigo){setErr('Preencha todos os campos.');return;}
+  if(senha!==senha2){setErr('As senhas não coincidem.');return;}
+  if(senha.length<6){setErr('Senha deve ter ao menos 6 caracteres.');return;}
+  const btn=document.querySelector('#tab-register .btn');
+  btn.disabled=true; setErr('Verificando código...');
   try {
-    const rc = await api('codigos_convite?codigo=eq.' + encodeURIComponent(codigo) + '&ativo=eq.true&select=codigo');
-    if (!rc.ok) { setLoginError('Erro ao verificar código.'); return; }
-    const codigos = await rc.json();
-    if (!codigos.length) { setLoginError('Código de convite inválido.'); return; }
-  } catch(e) {
-    setLoginError('Erro ao verificar código: ' + (e.name === 'AbortError' ? 'tempo esgotado' : e.message));
-    return;
-  }
+    const rc=await api('codigos_convite?codigo=eq.'+encodeURIComponent(codigo)+'&ativo=eq.true&select=codigo');
+    if(!rc.ok){setErr('Erro ao verificar código.');return;}
+    if(!(await rc.json()).length){setErr('Código de convite inválido.');return;}
+    setErr('Criando conta...');
+    const hash=await hashSenha(senha);
+    const r=await api('usuarios',{method:'POST',body:JSON.stringify({nome,senha_hash:hash})});
+    if(r.status===409){setErr('Esse nome já está em uso.');return;}
+    if(!r.ok){setErr('Erro ao criar conta: '+r.status);return;}
+    const rows=await r.json();
+    const {senha_hash,...user}=rows[0];
+    localStorage.setItem('teot_session',JSON.stringify(user));
+    window.location.href='dashboard.html';
+  } catch(e){setErr('Erro: '+(e.name==='AbortError'?'tempo esgotado':e.message));}
+  finally{btn.disabled=false;}
+}
 
-  setLoginError('Criando conta...');
-  const hash = await hashSenha(senha);
-
+async function doReset() {
+  const nome=document.getElementById('rst-nome').value.trim();
+  const senha=document.getElementById('rst-senha').value;
+  const senha2=document.getElementById('rst-senha2').value;
+  const codigo=document.getElementById('rst-codigo').value.trim().toLowerCase();
+  if(!nome||!senha||!senha2||!codigo){setErr('Preencha todos os campos.');return;}
+  if(senha.length<6){setErr('Senha deve ter ao menos 6 caracteres.');return;}
+  if(senha!==senha2){setErr('As senhas não coincidem.');return;}
+  const btn=document.querySelector('#tab-reset .btn');
+  btn.disabled=true; setErr('Verificando código...');
   try {
-    const r = await api('usuarios', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({ nome, senha_hash: hash })
-    });
-    if (r.status === 409) { setLoginError('Esse nome já está em uso.'); return; }
-    if (!r.ok) { setLoginError('Erro ao criar conta: ' + r.status); return; }
-    const rows = await r.json();
-    saveSession(rows[0]);
-    enterDashboard();
-  } catch(e) {
-    setLoginError('Erro: ' + (e.name === 'AbortError' ? 'tempo esgotado' : e.message));
-  } finally {
-    btn.disabled = false;
-  }
+    const rc=await api('codigos_convite?codigo=eq.'+encodeURIComponent(codigo)+'&ativo=eq.true&select=codigo');
+    if(!rc.ok){setErr('Erro ao verificar código.');return;}
+    if(!(await rc.json()).length){setErr('Código de convite inválido.');return;}
+    setErr('Atualizando senha...');
+    const ru=await api('usuarios?nome=eq.'+encodeURIComponent(nome)+'&select=id');
+    if(!ru.ok){setErr('Erro do servidor.');return;}
+    const users=await ru.json();
+    if(!users.length){setErr('Usuário não encontrado.');return;}
+    const hash=await hashSenha(senha);
+    const rp=await api('usuarios?id=eq.'+users[0].id,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({senha_hash:hash})});
+    if(!rp.ok){setErr('Erro ao atualizar senha: '+rp.status);return;}
+    setErr('');
+    alert('Senha redefinida! Faça login com a nova senha.');
+    switchTab('login');
+    document.getElementById('l-nome').value=nome;
+  } catch(e){setErr('Erro: '+(e.name==='AbortError'?'tempo esgotado':e.message));}
+  finally{btn.disabled=false;}
 }
 
-function enterDashboard() {
-  setLoginError('');
-  document.getElementById('dash-username').textContent = currentUser.nome;
-  const hora = new Date().getHours();
-  const saud = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
-  document.getElementById('dash-greeting').textContent = saud + ', ' + currentUser.nome + '! 👋';
-  goToDashboard();
+// Countdown
+function tick() {
+  const diff=Math.max(0,new Date('2026-08-12T08:00:00')-new Date());
+  document.getElementById('cd-d').textContent=String(Math.floor(diff/86400000)).padStart(2,'0');
+  document.getElementById('cd-h').textContent=String(Math.floor(diff%86400000/3600000)).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(Math.floor(diff%60000/1000)).padStart(2,'0');
 }
+tick(); setInterval(tick,1000);
 
-// ══════════════════════════════════════════════
-// DASHBOARD — progresso resumido
-// ══════════════════════════════════════════════
-async function loadDashboardProgress() {
-  try {
-    const r = await api('progresso_v2?usuario_id=eq.' + currentUser.id + '&select=item_id');
-    const rows = await r.json();
-    const done = rows.length;
-    const total = CRONO_DATA.reduce((a,m) => a + m.topics.length + m.hab.length, 0);
-    const pct = total > 0 ? Math.round(done/total*100) : 0;
-    document.getElementById('dash-pct').textContent = pct + '%';
-    document.getElementById('dash-bar').style.width = pct + '%';
-  } catch(e) {}
-}
+// Redirecionar se já logado
+if (localStorage.getItem('teot_session')) window.location.href='dashboard.html';
 
-// ══════════════════════════════════════════════
-// CRONOGRAMA DATA
-// ══════════════════════════════════════════════
-const CRONO_DATA = [
-  {mod:"Conceitos Básicos",semanas:"S1–S2",topics:[
-    {t:"Consolidação óssea e tratamento conservador",s:"S1"},
-    {t:"Atendimento ao politraumatizado",s:"S1"},
-    {t:"Fraturas expostas",s:"S1"},
-    {t:"Fixadores externos",s:"S1"},
-    {t:"Fixação interna",s:"S1"},
-    {t:"Osteomielites",s:"S2"},
-    {t:"Síndrome compartimental",s:"S2"},
-    {t:"Pseudoartrose",s:"S2"},
-    {t:"Fraturas por estresse",s:"S2"},
-    {t:"Lesões musculares",s:"S2"},
-    {t:"Dor ortopédica",s:"S2"},
-    {t:"Tuberculose e outras infecções",s:"S2"},
-  ],hab:[
-    {t:"Fixador externo linear de tíbia",s:"S1"},
-    {t:"Fixador externo modular de fêmur",s:"S1"},
-    {t:"Fixador externo de bacia – crista ilíaca",s:"S1"},
-    {t:"Fixador externo de bacia – supra-acetabular",s:"S1"},
-    {t:"Placa de compressão interfragmentária",s:"S1"},
-    {t:"Compressão interfragmentária com parafuso",s:"S1"},
-  ]},
-  {mod:"Trauma MMII",semanas:"S3–S7",topics:[
-    {t:"Fraturas do anel pélvico",s:"S3"},{t:"Fraturas do acetábulo",s:"S3"},
-    {t:"Luxação do quadril",s:"S3"},{t:"Fraturas da cabeça do fêmur",s:"S3"},
-    {t:"Fraturas do colo do fêmur",s:"S4"},{t:"Fraturas transtrocantéricas",s:"S4"},
-    {t:"Fraturas subtrocantéricas",s:"S4"},{t:"Fraturas da diáfise do fêmur",s:"S4"},
-    {t:"Fraturas do fêmur distal",s:"S5"},{t:"Fraturas da patela",s:"S5"},
-    {t:"Lesão do mecanismo extensor",s:"S5"},{t:"Luxação do joelho",s:"S5"},
-    {t:"Fraturas do planalto tibial",s:"S6"},{t:"Fraturas diafisárias da tíbia",s:"S6"},
-    {t:"Fraturas do pilão tibial",s:"S6"},{t:"Fraturas do tornozelo – parte 1",s:"S7"},
-    {t:"Fraturas do tornozelo – parte 2",s:"S7"},{t:"Fraturas do retropé",s:"S7"},
-    {t:"Fraturas do médio e antepé",s:"S7"},
-  ],hab:[
-    {t:"Parafuso de compressão sacral",s:"S3"},{t:"Haste anterógrada de fêmur",s:"S4"},
-    {t:"Haste céfalo-medular",s:"S4"},{t:"Haste retrógrada de fêmur",s:"S4"},
-    {t:"Parafuso deslizante do quadril",s:"S4"},{t:"Placa bloqueada de fêmur distal",s:"S5"},
-    {t:"Parafuso deslizante condilar",s:"S5"},{t:"Banda de tensão de patela",s:"S5"},
-    {t:"Fixador externo transarticular de joelho",s:"S6"},{t:"Haste de tíbia",s:"S6"},
-    {t:"Placa bloqueada de tíbia proximal",s:"S6"},{t:"Placa bloqueada de tíbia distal",s:"S6"},
-    {t:"Fixador externo transarticular de tornozelo",s:"S7"},{t:"Placa bloqueada de fíbula",s:"S7"},
-  ]},
-  {mod:"Trauma de Coluna",semanas:"S8",topics:[
-    {t:"Fraturas cervicais altas",s:"S8"},{t:"Fraturas cervicais baixas",s:"S8"},
-    {t:"Fraturas toracolombares",s:"S8"},{t:"Trauma raquimedulares e síndromes medulares",s:"S8"},
-  ],hab:[]},
-  {mod:"Trauma MMSS",semanas:"S9–S11",topics:[
-    {t:"Fraturas da clavícula",s:"S9"},{t:"Luxação acromioclavicular e esternoclavicular",s:"S9"},
-    {t:"Fraturas da escápula",s:"S9"},{t:"Fraturas do úmero proximal",s:"S9"},
-    {t:"Fraturas da diáfise do úmero",s:"S10"},{t:"Fraturas da porção distal do úmero",s:"S10"},
-    {t:"Fraturas do cotovelo – parte 1",s:"S10"},{t:"Fraturas do cotovelo – parte 2",s:"S10"},
-    {t:"Fraturas do antebraço",s:"S11"},{t:"Fraturas do rádio distal",s:"S11"},
-    {t:"Fraturas do carpo",s:"S11"},
-  ],hab:[
-    {t:"Placa bloqueada de clavícula",s:"S9"},{t:"Placa de úmero proximal",s:"S9"},
-    {t:"Fixador externo transarticular de cotovelo",s:"S10"},{t:"Placa bloqueada de úmero distal",s:"S10"},
-    {t:"Placa bloqueada de olécrano",s:"S10"},{t:"Banda de tensão de olécrano",s:"S10"},
-    {t:"Placa bloqueada de rádio distal",s:"S11"},
-  ]},
-  {mod:"Trauma Pediátrico",semanas:"S12–S13",topics:[
-    {t:"Fraturas dos MMSS pediátricas – parte 1",s:"S12"},{t:"Fraturas dos MMSS pediátricas – parte 2",s:"S12"},
-    {t:"Fraturas dos MMSS pediátricas – parte 3",s:"S12"},{t:"Fraturas dos MMII pediátricas – parte 1",s:"S13"},
-    {t:"Fraturas dos MMII pediátricas – parte 2",s:"S13"},{t:"Fraturas dos MMII pediátricas – parte 3",s:"S13"},
-  ],hab:[]},
-  {mod:"Ombro e Cotovelo",semanas:"S14–S17",topics:[
-    {t:"Anatomia e radiologia do ombro",s:"S14"},{t:"Anatomia e radiologia do cotovelo",s:"S14"},
-    {t:"Biomecânica e exame físico do ombro",s:"S14"},{t:"Biomecânica e exame físico do cotovelo",s:"S14"},
-    {t:"Lesões do manguito rotador",s:"S15"},{t:"Tendinite calcárea",s:"S15"},
-    {t:"Capsulite adesiva",s:"S15"},{t:"Instabilidade glenoumeral",s:"S15"},
-    {t:"Artroscopia do ombro",s:"S16"},{t:"Artroses e artroplastia do ombro",s:"S16"},
-    {t:"Lesões tendíneas do ombro e cotovelo",s:"S16"},{t:"Instabilidade do cotovelo",s:"S16"},
-    {t:"Epicondilites",s:"S17"},{t:"Rigidez do cotovelo",s:"S17"},
-    {t:"Artroscopia e artroplastia do cotovelo",s:"S17"},
-  ],hab:[
-    {t:"Artroscopia de ombro",s:"S16"},{t:"Artroplastias de ombro",s:"S16"},
-  ]},
-  {mod:"Joelho",semanas:"S18–S20",topics:[
-    {t:"Anatomia e radiografia do joelho",s:"S18"},{t:"Biomecânica e exame físico do joelho",s:"S18"},
-    {t:"Artrose do joelho",s:"S19"},{t:"Osteonecrose do joelho",s:"S19"},
-    {t:"Lesões da cartilagem do joelho",s:"S19"},{t:"Lesões do LCA",s:"S20"},
-    {t:"Instabilidade patelo-femoral",s:"S20"},{t:"Lesões meniscais",s:"S20"},
-    {t:"Lesões do LCP",s:"S20"},
-  ],hab:[
-    {t:"Artroplastia total de joelho",s:"S19"},{t:"Artroscopia de joelho",s:"S20"},
-  ]},
-  {mod:"Coluna",semanas:"S21–S22",topics:[
-    {t:"Anatomia e radiologia da coluna",s:"S21"},{t:"Biomecânica e exame físico da coluna",s:"S21"},
-    {t:"Dor lombar",s:"S21"},{t:"Escolioses",s:"S22"},
-    {t:"Espondilolisteses",s:"S22"},{t:"Scheuermann e espondilite anquilosante",s:"S22"},
-  ],hab:[]},
-  {mod:"Pé e Tornozelo",semanas:"S23–S24",topics:[
-    {t:"Anatomia e radiologia do pé e tornozelo",s:"S23"},{t:"Biomecânica e exame físico do pé e tornozelo",s:"S23"},
-    {t:"Hálux valgo",s:"S23"},{t:"Pé diabético e pé reumatoide",s:"S23"},
-    {t:"Deformidades dos pés",s:"S24"},{t:"Coalisões tarsais",s:"S24"},
-    {t:"Lesões do aquiles",s:"S24"},{t:"Miscelânea pé e tornozelo",s:"S24"},
-  ],hab:[]},
-  {mod:"Quadril",semanas:"S25–S26",topics:[
-    {t:"Anatomia e radiologia do quadril",s:"S25"},{t:"Biomecânica e exame físico do quadril",s:"S25"},
-    {t:"Impacto femoroacetabular",s:"S25"},{t:"Coxartrose",s:"S26"},
-    {t:"Artroplastia total do quadril",s:"S26"},{t:"Osteonecrose do quadril",s:"S26"},
-  ],hab:[{t:"Artroplastia total de quadril",s:"S26"}]},
-  {mod:"Mão e Punho",semanas:"S27–S30",topics:[
-    {t:"Anatomia da mão e punho",s:"S27"},{t:"Exame físico da mão e punho",s:"S27"},
-    {t:"Distrofia simpático reflexa",s:"S27"},{t:"Dupuytren",s:"S27"},
-    {t:"Doença de Kienbock",s:"S28"},{t:"Mão reumatoide",s:"S28"},
-    {t:"Tenossinovites",s:"S28"},{t:"Lesão de tendões flexores e extensores",s:"S28"},
-    {t:"Paralisia braquial obstétrica",s:"S29"},{t:"Lesão de plexo traumático",s:"S29"},
-    {t:"Síndromes compressivas – parte 1",s:"S29"},{t:"Síndromes compressivas – parte 2",s:"S29"},
-    {t:"Deformidades congênitas dos MMSS – parte 1",s:"S30"},{t:"Deformidades congênitas dos MMSS – parte 2",s:"S30"},
-    {t:"Instabilidade do carpo",s:"S30"},{t:"Reimplante e amputações",s:"S30"},
-    {t:"Rizartrose",s:"S30"},
-  ],hab:[{t:"Suturas de tendão",s:"S28"}]},
-  {mod:"Tumores Ósseos",semanas:"S31–S32",topics:[
-    {t:"Princípios dos tumores",s:"S31"},{t:"Lesões pseudotumorais",s:"S31"},
-    {t:"Tumores de partes moles",s:"S31"},{t:"Tumores ósseos benignos",s:"S31"},
-    {t:"Tumores ósseos malignos – parte 1",s:"S32"},{t:"Tumores ósseos malignos – parte 2",s:"S32"},
-    {t:"Tumores fibrosos",s:"S32"},{t:"Metástases ósseas e mieloma múltiplo",s:"S32"},
-  ],hab:[]},
-  {mod:"Ortopedia Pediátrica",semanas:"S33–S35",topics:[
-    {t:"Marcha",s:"S33"},{t:"Mielomeningocele",s:"S33"},
-    {t:"Maus tratos",s:"S34"},{t:"Osteogênese imperfeita",s:"S34"},
-    {t:"Mucopolissacaridoses",s:"S34"},{t:"Displasia do desenvolvimento do quadril",s:"S35"},
-    {t:"Doença de Perthes",s:"S35"},{t:"Epifisiólise",s:"S35"},
-    {t:"Sinovite transitória e artrite séptica",s:"S35"},{t:"Tíbia vara de Blount",s:"S35"},
-    {t:"Deformidades congênitas dos MMII",s:"S35"},{t:"Pé torto congênito",s:"S35"},
-    {t:"Sprengel",s:"S35"},{t:"Torcicolo congênito",s:"S35"},
-  ],hab:[{t:"Suspensório de Pavlik",s:"S35"}]},
-];
-
-// ══════════════════════════════════════════════
-// CRONOGRAMA — lógica
-// ══════════════════════════════════════════════
-let cronoState = {};
-let activeTab = 'all';
-let activeFilter = 'all';
-
-function sid(mod, type, idx) { return mod+'|'+type+'|'+idx; }
-
-function setSyncStatus(status, text) {
-  const dot = document.getElementById('sync-dot');
-  const lbl = document.getElementById('sync-lbl');
-  if (dot) { dot.className = 'sync-dot '+status; }
-  if (lbl) lbl.textContent = text;
-  const fs = document.getElementById('footer-status');
-  if (fs) fs.textContent = text;
-}
-
-async function loadCronoProgress() {
-  setSyncStatus('loading', 'carregando...');
-  try {
-    const r = await api('progresso_v2?usuario_id=eq.'+currentUser.id+'&select=item_id');
-    if (!r.ok) throw new Error();
-    const rows = await r.json();
-    cronoState = {};
-    rows.forEach(row => { cronoState[row.item_id] = true; });
-    setSyncStatus('ok', 'sincronizado');
-  } catch(e) {
-    setSyncStatus('err', 'erro ao carregar');
-  }
-  renderCrono();
-}
-
-async function toggleItem(id) {
-  const wasChecked = !!cronoState[id];
-  if (wasChecked) { delete cronoState[id]; } else { cronoState[id] = true; }
-  renderCrono();
-  setSyncStatus('loading', 'salvando...');
-  try {
-    if (!wasChecked) {
-      await api('progresso_v2', {
-        method: 'POST',
-        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify([{
-          usuario_id: currentUser.id,
-          cronograma_id: null,
-          item_id: id,
-          atualizado_em: new Date().toISOString()
-        }])
-      });
-    } else {
-      await api('progresso_v2?usuario_id=eq.'+currentUser.id+'&item_id=eq.'+encodeURIComponent(id), {
-        method: 'DELETE',
-        headers: { 'Prefer': 'return=minimal' }
-      });
-    }
-    setSyncStatus('ok', 'sincronizado');
-  } catch(e) {
-    setSyncStatus('err', 'erro ao salvar');
-    if (!wasChecked) { delete cronoState[id]; } else { cronoState[id] = true; }
-    renderCrono();
-  }
-}
-
-function counts() {
-  let tt=0,td=0,ht=0,hd=0,mc=0;
-  CRONO_DATA.forEach(m => {
-    let mt=0,md=0,mh=0,mhd=0;
-    m.topics.forEach((_,i)=>{ const id=sid(m.mod,'t',i); tt++;mt++; if(cronoState[id]){td++;md++;} });
-    m.hab.forEach((_,i)=>{ const id=sid(m.mod,'h',i); ht++;mh++; if(cronoState[id]){hd++;mhd++;} });
-    if((mt+mh)>0&&(md+mhd)===(mt+mh)) mc++;
-  });
-  return {tt,td,ht,hd,mc,total:tt+ht,done:td+hd};
-}
-
-function chkSVG() {
-  return '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8.5 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-}
-
-function setFilter(f, btn) {
-  activeFilter = f;
-  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderCrono();
-}
-
-function setTab(t) {
-  activeTab = t;
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===t));
-  renderCrono();
-}
-
-function renderCrono() {
-  const nav = document.getElementById('nav-inner');
-  if (!nav) return;
-  nav.innerHTML = '';
-  ['Todos', ...CRONO_DATA.map(m=>m.mod)].forEach((label, i) => {
-    const tabKey = i===0?'all':CRONO_DATA[i-1].mod;
-    const b = document.createElement('button');
-    b.className = 'nav-btn'+(activeTab===tabKey?' active':'');
-    b.dataset.tab = tabKey;
-    b.textContent = label;
-    b.onclick = () => setTab(tabKey);
-    nav.appendChild(b);
-  });
-
-  const mini = document.getElementById('prog-mini');
-  mini.innerHTML = '';
-  CRONO_DATA.forEach(m => {
-    const total = m.topics.length + m.hab.length;
-    const done = m.topics.filter((_,i)=>cronoState[sid(m.mod,'t',i)]).length
-               + m.hab.filter((_,i)=>cronoState[sid(m.mod,'h',i)]).length;
-    const bar = document.createElement('div');
-    bar.className = 'prog-mini-bar'+(done===total&&total>0?' done':done>0?' partial':'');
-    bar.title = m.mod+': '+done+'/'+total;
-    bar.onclick = () => setTab(m.mod);
-    mini.appendChild(bar);
-  });
-
-  const c = counts();
-  document.getElementById('st-td').textContent = c.td+'/'+c.tt;
-  document.getElementById('st-hd').textContent = c.hd+'/'+c.ht;
-  const pct = c.total>0?Math.round(c.done/c.total*100):0;
-  document.getElementById('st-pct').textContent = pct+'%';
-  document.getElementById('st-mc').textContent = c.mc+'/'+CRONO_DATA.length;
-  document.getElementById('prog-lbl').textContent = c.done+' / '+c.total+' itens';
-  document.getElementById('prog-fill').style.width = pct+'%';
-
-  const main = document.getElementById('main');
-  main.innerHTML = '';
-  const toShow = activeTab==='all'?CRONO_DATA:CRONO_DATA.filter(m=>m.mod===activeTab);
-  let first = true;
-
-  toShow.forEach(m => {
-    const totalT=m.topics.length, totalH=m.hab.length;
-    const doneT=m.topics.filter((_,i)=>cronoState[sid(m.mod,'t',i)]).length;
-    const doneH=m.hab.filter((_,i)=>cronoState[sid(m.mod,'h',i)]).length;
-    const total=totalT+totalH, done=doneT+doneH;
-    const mpct=total>0?Math.round(done/total*100):0;
-
-    const filtT=m.topics.filter((_,i)=>{const d=!!cronoState[sid(m.mod,'t',i)];return activeFilter==='all'||(activeFilter==='done'&&d)||(activeFilter==='pending'&&!d);});
-    const filtH=m.hab.filter((_,i)=>{const d=!!cronoState[sid(m.mod,'h',i)];return activeFilter==='all'||(activeFilter==='done'&&d)||(activeFilter==='pending'&&!d);});
-    if (!filtT.length&&!filtH.length) return;
-
-    if (!first){const dv=document.createElement('div');dv.className='divider';main.appendChild(dv);}
-    first=false;
-
-    const wrap=document.createElement('div');
-    wrap.className='mod-block';
-    wrap.innerHTML=`<div class="mod-head"><div><div class="mod-title">${m.mod}</div><div class="mod-weeks">${m.semanas}</div></div><div class="mod-pct"><strong>${mpct}%</strong>${done}/${total}</div></div><div class="mod-track"><div class="mod-track-fill" style="width:${mpct}%"></div></div>`;
-
-    if(filtT.length){
-      const lbl=document.createElement('div');lbl.className='section-label';lbl.textContent='TÓPICOS';wrap.appendChild(lbl);
-      const grid=document.createElement('div');grid.className='cards-grid';
-      m.topics.forEach((tp,i)=>{
-        const id=sid(m.mod,'t',i); const d=!!cronoState[id];
-        if(activeFilter==='done'&&!d||activeFilter==='pending'&&d) return;
-        const card=document.createElement('div');
-        card.className='topic-card'+(d?' done':'');
-        card.innerHTML=`<div class="chk">${chkSVG()}</div><div><div class="card-text">${tp.t}</div><div class="card-week">${tp.s}</div></div>`;
-        card.onclick=()=>toggleItem(id);
-        grid.appendChild(card);
-      });
-      wrap.appendChild(grid);
-    }
-
-    if(filtH.length){
-      const lbl=document.createElement('div');lbl.className='section-label hab-lbl';lbl.textContent='⚙ HABILIDADES PRÁTICAS';wrap.appendChild(lbl);
-      const grid=document.createElement('div');grid.className='cards-grid';
-      m.hab.forEach((h,i)=>{
-        const id=sid(m.mod,'h',i); const d=!!cronoState[id];
-        if(activeFilter==='done'&&!d||activeFilter==='pending'&&d) return;
-        const card=document.createElement('div');
-        card.className='hab-card'+(d?' done':'');
-        card.innerHTML=`<div class="chk">${chkSVG()}</div><div><div class="card-text">${h.t}</div><div class="card-week">${h.s}</div></div>`;
-        card.onclick=()=>toggleItem(id);
-        grid.appendChild(card);
-      });
-      wrap.appendChild(grid);
-    }
-
-    main.appendChild(wrap);
-  });
-
-  if(first) main.innerHTML='<div class="empty">Nenhum item para mostrar.</div>';
-}
-
-// ══════════════════════════════════════════════
-// COUNTDOWN
-// ══════════════════════════════════════════════
-function updateCountdown() {
-  const prova = new Date('2026-08-12T08:00:00');
-  const diff = Math.max(0, prova - new Date());
-
-  const dias  = String(Math.floor(diff / 86400000)).padStart(2,'0');
-  const horas = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
-  const min   = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
-  const seg   = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
-
-  ['cd-dias-login','cd-dias'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=dias; });
-  ['cd-horas-login','cd-horas'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=horas; });
-  ['cd-min-login','cd-min'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=min; });
-  ['cd-seg-login','cd-seg'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=seg; });
-}
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-// ══════════════════════════════════════════════
-// BOOT
-// ══════════════════════════════════════════════
-(function init() {
-  const session = loadSession();
-  if (session) {
-    currentUser = session;
-    document.getElementById('dash-username').textContent = currentUser.nome;
-    const hora = new Date().getHours();
-    const saud = hora<12?'Bom dia':hora<18?'Boa tarde':'Boa noite';
-    document.getElementById('dash-greeting').textContent = saud+', '+currentUser.nome+'! 👋';
-    goToDashboard();
-  } else {
-    showScreen('screen-login');
-  }
-  ['login-nome','login-senha'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-  });
-  ['reg-nome','reg-senha','reg-senha2','reg-codigo'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
-  });
-})();
+// Enter key
+document.getElementById('l-senha').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('l-nome').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 </script>
 </body>
 </html>
