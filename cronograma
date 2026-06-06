@@ -151,7 +151,7 @@ main{padding:12px 16px 80px}
 <script>
 // Verificar sessão
 const session = localStorage.getItem('teot_session');
-if (!session) { window.location.href = 'index.html'; }
+if (!session) { window.location.href = 'index.html'; throw new Error('no session'); }
 const user = JSON.parse(session);
 
 const SB_URL = 'https://piziokskqrrnxahabhbt.supabase.co';
