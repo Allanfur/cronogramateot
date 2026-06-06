@@ -235,9 +235,6 @@ function tick() {
 }
 tick(); setInterval(tick,1000);
 
-// Redirecionar se já logado
-if (localStorage.getItem('teot_session')) window.location.href='dashboard.html';
-
 // Enter key
 document.getElementById('l-senha').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('l-nome').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
