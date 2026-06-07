@@ -206,14 +206,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL CRIAR -->
 <div class="modal-overlay" id="modal" style="display:none" onclick="closeModal(event)">
   <div class="modal">
     <h3 id="modal-title">Nova pasta</h3>
-    <input id="modal-input" placeholder="Nome..." onkeydown="if(event.key==='Enter')confirmModal()">
+    <input id="modal-input" placeholder="Nome..." onkeydown="if(event.key='Enter')confirmModal()">
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
       <button class="btn-confirm" onclick="confirmModal()">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MOVER -->
+<div class="modal-overlay" id="move-modal" style="display:none" onclick="closeMoveModal(event)">
+  <div class="modal">
+    <h3>↗ Mover nota para...</h3>
+    <div id="move-list" style="max-height:240px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:4px"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="document.getElementById('move-modal').style.display='none'">Cancelar</button>
     </div>
   </div>
 </div>
