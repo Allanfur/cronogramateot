@@ -398,10 +398,15 @@ function makeNoteItem(nota, depth) {
 
   const actions = document.createElement('div');
   actions.className = 'tree-actions';
+  const btnMove = document.createElement('button');
+  btnMove.className = 'tree-act'; btnMove.title = 'Mover nota';
+  btnMove.textContent = '↗';
+  btnMove.onclick = (e) => { e.stopPropagation(); openMoveModal(nota.id); };
   const btnDel = document.createElement('button');
   btnDel.className = 'tree-act del'; btnDel.title = 'Apagar nota';
   btnDel.textContent = '✕';
   btnDel.onclick = (e) => { e.stopPropagation(); deleteNoteById(nota.id); };
+  actions.appendChild(btnMove);
   actions.appendChild(btnDel);
 
   row.appendChild(inner); row.appendChild(actions);
@@ -580,6 +585,73 @@ function fmtLine(prefix) {
 // ── MOBILE SIDEBAR ───────────────────────────────
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ── MOVER NOTA ──────────────────────────────────
+let moveNoteId = null;
+
+function openMoveModal(notaId) {
+  moveNoteId = notaId;
+  const list = document.getElementById('move-list');
+  list.innerHTML = '';
+
+  // Opção: sem pasta
+  const semPasta = document.createElement('div');
+  semPasta.style = 'padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text2);background:var(--surface2);transition:background .12s';
+  semPasta.textContent = '📄 Sem pasta (raiz)';
+  semPasta.onmouseover = () => semPasta.style.background = 'var(--surface3)';
+  semPasta.onmouseout = () => semPasta.style.background = 'var(--surface2)';
+  semPasta.onclick = () => moveNoteTo(null);
+  list.appendChild(semPasta);
+
+  // Listar todas as pastas
+  function addPastaOption(pasta, depth) {
+    const opt = document.createElement('div');
+    opt.style = 'padding:8px 12px;padding-left:'+(12+depth*16)+'px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text2);background:var(--surface2);transition:background .12s';
+    opt.textContent = '📁 ' + pasta.nome;
+    opt.onmouseover = () => opt.style.background = 'var(--surface3)';
+    opt.onmouseout = () => opt.style.background = 'var(--surface2)';
+    opt.onclick = () => moveNoteTo(pasta.id);
+    list.appendChild(opt);
+    pastas.filter(p => p.pai_id === pasta.id).forEach(sub => addPastaOption(sub, depth+1));
+  }
+  pastas.filter(p => !p.pai_id).forEach(p => addPastaOption(p, 0));
+
+  if (pastas.length === 0) {
+    const empty = document.createElement('div');
+    empty.style = 'padding:12px;font-size:13px;color:var(--text3);text-align:center';
+    empty.textContent = 'Nenhuma pasta criada ainda';
+    list.appendChild(empty);
+  }
+
+  document.getElementById('move-modal').style.display = 'flex';
+}
+
+function closeMoveModal(e) {
+  if (e && e.target !== document.getElementById('move-modal')) return;
+  document.getElementById('move-modal').style.display = 'none';
+  moveNoteId = null;
+}
+
+async function moveNoteTo(pastaId) {
+  document.getElementById('move-modal').style.display = 'none';
+  if (!moveNoteId) return;
+  setSync('loading', 'movendo...');
+  try {
+    await api('notas?id=eq.'+moveNoteId, {
+      method: 'PATCH',
+      headers: {'Prefer': 'return=minimal'},
+      body: JSON.stringify({pasta_id: pastaId})
+    });
+    const idx = notas.findIndex(n => n.id === moveNoteId);
+    if (idx >= 0) notas[idx].pasta_id = pastaId;
+    if (pastaId) openFolders.add(pastaId);
+    renderTree();
+    setSync('ok', 'nota movida');
+  } catch(e) {
+    setSync('err', 'erro ao mover');
+  }
+  moveNoteId = null;
 }
 
 // ── INIT ────────────────────────────────────────
