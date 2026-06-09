@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEOT — Admin Flashcards</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#273549;--surface3:#2d3f55;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --green:#10b981;--green-bg:rgba(16,185,129,.12);--green-border:rgba(16,185,129,.3);
+  --blue:#3b82f6;--red:#ef4444;--orange:#f97316;--yellow:#eab308;
+  --radius:12px;--radius-sm:8px;
+}
+html[data-theme='light']{
+  --bg:#f1f5f9;--surface:#fff;--surface2:#e2e8f0;--surface3:#cbd5e1;
+  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.15);
+  --text:#0f172a;--text2:#334155;--text3:#64748b;
+  --green:#059669;--green-bg:rgba(5,150,105,.1);--green-border:rgba(5,150,105,.3);
+  --red:#dc2626;--orange:#ea580c;--yellow:#ca8a04;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:12px}
+.btn-back{font-size:13px;color:var(--text2);background:transparent;border:none;
+  cursor:pointer;padding:4px 0}
+.btn-back:hover{color:var(--green)}
+.header-title{font-size:15px;font-weight:800}
+.header-title span{color:var(--red)}
+.admin-badge{font-size:10px;font-weight:700;background:var(--red);color:#fff;
+  padding:2px 8px;border-radius:99px;letter-spacing:.05em}
+
+/* TABS */
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 16px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.tabs-bar::-webkit-scrollbar{display:none}
+.tab-btn{font-size:13px;font-weight:500;padding:12px 16px;border:none;
+  background:transparent;color:var(--text3);cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab-btn.active{color:var(--green);border-bottom-color:var(--green);font-weight:600}
+.tab-btn:hover:not(.active){color:var(--text2)}
+
+/* CONTENT */
+.content{padding:20px 16px 60px;max-width:860px;margin:0 auto}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* SECTION */
+.section-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.section-head{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;gap:8px;flex-wrap:wrap}
+.section-title{font-size:14px;font-weight:700}
+.section-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;
+  background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.badge.red{background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.3)}
+.badge.blue{background:rgba(59,130,246,.1);color:var(--blue);border-color:rgba(59,130,246,.3)}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr}}
+.stat-box{background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.stat-num{font-size:24px;font-weight:800;color:var(--green)}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--surface2);padding:10px 12px;text-align:left;font-size:11px;
+  font-weight:700;letter-spacing:.05em;color:var(--text3);white-space:nowrap}
+td{padding:10px 12px;border-top:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:var(--surface2)}
+.td-text{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-actions{display:flex;gap:6px;justify-content:flex-end}
+
+/* BUTTONS */
+.btn-sm{font-size:12px;padding:5px 10px;border-radius:var(--radius-sm);
+  border:none;cursor:pointer;font-weight:500;transition:all .15s}
+.btn-edit{background:var(--blue);color:#fff}
+.btn-edit:hover{opacity:.85}
+.btn-del{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.btn-del:hover{background:var(--red);color:#fff}
+.btn-primary{background:var(--green);color:#fff;font-size:13px;font-weight:600;
+  padding:8px 16px;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:opacity .15s}
+.btn-primary:hover{opacity:.85}
+.btn-secondary{background:transparent;color:var(--text2);font-size:13px;
+  padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--border2);cursor:pointer}
+.btn-secondary:hover{border-color:var(--green);color:var(--green)}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--red);font-size:13px;
+  padding:8px 16px;border-radius:var(--radius-sm);border:1px solid rgba(239,68,68,.3);cursor:pointer}
+.btn-danger:hover{background:var(--red);color:#fff}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-input{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:7px 12px;font-size:13px;color:var(--text);outline:none;min-width:180px}
+.filter-input:focus{border-color:var(--green)}
+.filter-select{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:7px 12px;font-size:13px;color:var(--text);outline:none;-webkit-appearance:none}
+
+/* CONFIG */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.config-grid{grid-template-columns:1fr}}
+.config-item{background:var(--bg);border-radius:var(--radius-sm);padding:14px}
+.config-label{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.config-desc{font-size:11px;color:var(--text3);margin-bottom:8px}
+.config-input{width:100%;background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:8px 10px;font-size:14px;font-weight:700;
+  color:var(--text);outline:none;text-align:center}
+.config-input:focus{border-color:var(--green)}
+
+/* USERS TABLE */
+.user-row{display:flex;align-items:center;gap:12px;padding:12px;
+  border-top:1px solid var(--border);transition:background .1s}
+.user-row:first-child{border-top:none}
+.user-row:hover{background:var(--surface2)}
+.user-avatar{width:36px;height:36px;border-radius:99px;background:var(--green-bg);
+  border:1px solid var(--green-border);display:flex;align-items:center;
+  justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:14px;font-weight:600}
+.user-stats{font-size:12px;color:var(--text3);margin-top:2px}
+.user-bars{display:flex;gap:4px;margin-top:6px}
+.user-bar{height:4px;border-radius:99px;flex:1}
+.progress-mini{height:4px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-top:6px}
+.progress-mini-fill{height:100%;background:var(--green);border-radius:99px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);
+  display:flex;align-items:center;justify-content:center;z-index:200;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:24px;width:100%;max-width:480px;
+  max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.field textarea,.field input,.field select{
+  width:100%;background:var(--bg);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;
+  color:var(--text);outline:none;font-family:inherit;transition:border-color .2s;-webkit-appearance:none}
+.field textarea{resize:vertical;min-height:80px}
+.field textarea:focus,.field input:focus,.field select:focus{border-color:var(--green)}
+.modal-btns{display:flex;gap:8px;margin-top:4px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:10px 20px;font-size:13px;font-weight:500;z-index:999;
+  transition:transform .3s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
+
+/* EMPTY */
+.empty{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <button class="btn-back" onclick="window.location.href='dashboard.html'">‹ Painel</button>
+    <div class="header-title">TEOT <span>Admin</span></div>
+    <span class="admin-badge">ADMIN</span>
+  </div>
+  <div id="theme-btn" onclick="toggleTheme()" title="Alternar tema" style="
+    position:relative;width:52px;height:26px;border-radius:99px;
+    background:var(--surface2);border:1px solid var(--border2);
+    cursor:pointer;flex-shrink:0;display:flex;
+    align-items:center;justify-content:space-between;padding:0 6px">
+    <span style="font-size:10px;line-height:1">🌙</span>
+    <span style="font-size:10px;line-height:1">☀️</span>
+    <span id="theme-pill" style="position:absolute;top:3px;left:3px;
+      width:18px;height:18px;border-radius:99px;background:var(--green);
+      transition:transform .25s cubic-bezier(.4,0,.2,1)"></span>
+  </div>
+</div>
+
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab('visao-geral')">📊 Visão Geral</button>
+  <button class="tab-btn" onclick="switchTab('cards')">🃏 Cards</button>
+  <button class="tab-btn" onclick="switchTab('baralhos')">📦 Baralhos</button>
+  <button class="tab-btn" onclick="switchTab('usuarios')">👥 Usuários</button>
+  <button class="tab-btn" onclick="switchTab('config')">⚙️ Configurações</button>
+</div>
+
+<div class="content">
+
+  <!-- ══ VISÃO GERAL ══ -->
+  <div class="tab-panel active" id="tab-visao-geral">
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" id="ov-total-cards">--</div><div class="stat-lbl">Total de Cards</div></div>
+      <div class="stat-box"><div class="stat-num" id="ov-total-baralhos">--</div><div class="stat-lbl">Baralhos</div></div>
+      <div class="stat-box"><div class="stat-num" id="ov-total-usuarios">--</div><div class="stat-lbl">Usuários</div></div>
+    </div>
+    <div class="section-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">📅 Revisões agendadas</div>
+          <div class="section-sub">Cards que vencem nos próximos dias</div>
+        </div>
+      </div>
+      <div id="ov-schedule"></div>
+    </div>
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">🏆 Atividade por usuário</div>
+      </div>
+      <div id="ov-users"></div>
+    </div>
+  </div>
+
+  <!-- ══ CARDS ══ -->
+  <div class="tab-panel" id="tab-cards">
+    <div class="section-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">🃏 Todos os Flashcards</div>
+          <div class="section-sub" id="cards-count"></div>
+        </div>
+        <button class="btn-danger" onclick="confirmDeleteAll()">🗑 Apagar selecionados</button>
+      </div>
+      <div class="filters">
+        <input class="filter-input" id="cards-search" placeholder="🔍 Buscar por frente ou verso..." oninput="renderCards()">
+        <select class="filter-select" id="cards-filter-baralho" onchange="renderCards()">
+          <option value="">Todos os baralhos</option>
+        </select>
+        <select class="filter-select" id="cards-filter-usuario" onchange="renderCards()">
+          <option value="">Todos os usuários</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="chk-all" onchange="toggleAllCards(this)"></th>
+              <th>Frente</th>
+              <th>Verso</th>
+              <th>Baralho</th>
+              <th>Usuário</th>
+              <th>Revisões</th>
+              <th>Próx. revisão</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cards-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BARALHOS ══ -->
+  <div class="tab-panel" id="tab-baralhos">
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">📦 Gerenciar Baralhos</div>
+        <button class="btn-primary" onclick="openNewDeckModal()">+ Novo Baralho</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Usuário</th>
+              <th>Cards</th>
+              <th>Criado em</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="decks-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ USUÁRIOS ══ -->
+  <div class="tab-panel" id="tab-usuarios">
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">👥 Atividade dos Usuários</div>
+      </div>
+      <div id="usuarios-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ CONFIGURAÇÕES ══ -->
+  <div class="tab-panel" id="tab-config">
+    <div class="section-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">⚙️ Configurações do SRS</div>
+          <div class="section-sub">Valem para todos os usuários</div>
+        </div>
+        <button class="btn-primary" onclick="saveConfig()">💾 Salvar</button>
+      </div>
+      <div class="config-grid" id="config-grid"></div>
+    </div>
+    <div class="section-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">🔴 Zona de Perigo</div>
+          <div class="section-sub">Ações irreversíveis</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-danger" onclick="resetAllProgress()">⚠️ Resetar progresso de todos</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL EDITAR CARD -->
+<div class="modal-overlay" id="modal-card" style="display:none" onclick="closeModal('modal-card',event)">
+  <div class="modal">
+    <h3>✏️ Editar Flashcard</h3>
+    <input type="hidden" id="edit-card-id">
+    <div class="field"><label>Frente</label><textarea id="edit-frente"></textarea></div>
+    <div class="field"><label>Verso</label><textarea id="edit-verso"></textarea></div>
+    <div class="field">
+      <label>Baralho</label>
+      <select id="edit-baralho"></select>
+    </div>
+    <div class="field">
+      <label>Próxima revisão</label>
+      <input type="datetime-local" id="edit-proxima">
+    </div>
+    <div class="field">
+      <label>Intervalo atual (dias)</label>
+      <input type="number" id="edit-intervalo" min="0" step="0.5">
+    </div>
+    <div class="field">
+      <label>Total de revisões</label>
+      <input type="number" id="edit-total-rev" min="0">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal('modal-card')">Cancelar</button>
+      <button class="btn-primary" onclick="saveCardEdit()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR BARALHO -->
+<div class="modal-overlay" id="modal-deck" style="display:none" onclick="closeModal('modal-deck',event)">
+  <div class="modal">
+    <h3 id="deck-modal-title">📦 Editar Baralho</h3>
+    <input type="hidden" id="edit-deck-id">
+    <div class="field"><label>Nome do baralho</label><input id="edit-deck-nome" type="text"></div>
+    <div class="field">
+      <label>Mover todos os cards para outro baralho (opcional)</label>
+      <select id="edit-deck-mover"><option value="">Não mover</option></select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal('modal-deck')">Cancelar</button>
+      <button class="btn-primary" onclick="saveDeckEdit()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SESSÃO + PROTEÇÃO ADMIN ──────────────────────
+const session = localStorage.getItem('teot_session');
+if (!session) { window.location.href='index.html'; throw new Error('no session'); }
+const user = JSON.parse(session);
+if (!user.is_admin) {
+  alert('Acesso restrito a administradores.');
+  window.location.href='dashboard.html';
+  throw new Error('not admin');
+}
+
+// ── SUPABASE ────────────────────────────────────
+const SB_URL = 'https://piziokskqrrnxahabhbt.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpemlva3NrcXJybnhhaGFiaGJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTY5NzMsImV4cCI6MjA5NTEzMjk3M30.elc7_qtJcm-HL4l8tIPvH9KNQMLMVEg9Ga2jwJPhA7g';
+const H = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+function api(path,opts={}){
+  const c=new AbortController(),t=setTimeout(()=>c.abort(),10000);
+  return fetch(SB_URL+'/rest/v1/'+path,{...opts,signal:c.signal,headers:{...H,...(opts.headers||{})}}).finally(()=>clearTimeout(t));
+}
+
+// ── ESTADO ──────────────────────────────────────
+let allCards=[], allBaralhos=[], allUsuarios=[], configs=[];
+let selectedCards=new Set();
+
+// ── TEMA ────────────────────────────────────────
+function loadTheme(){
+  const t=localStorage.getItem('teot_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  const p=document.getElementById('theme-pill');
+  if(p) p.style.transform=t==='dark'?'translateX(0)':'translateX(26px)';
+}
+function toggleTheme(){
+  const next=(document.documentElement.getAttribute('data-theme')||'dark')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('teot_theme',next);
+  const p=document.getElementById('theme-pill');
+  if(p) p.style.transform=next==='dark'?'translateX(0)':'translateX(26px)';
+}
+loadTheme();
+
+// ── TOAST ────────────────────────────────────────
+function toast(msg, type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast '+type+' show';
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ── TABS ─────────────────────────────────────────
+function switchTab(id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+function closeModal(id,e){
+  if(e&&e.target!==document.getElementById(id))return;
+  document.getElementById(id).style.display='none';
+}
+
+// ── CARREGAR TUDO ────────────────────────────────
+async function loadAll(){
+  try {
+    const [rc,rb,ru,rconf] = await Promise.all([
+      api('flashcards?select=*&order=criado_em.desc'),
+      api('baralhos?select=*&order=nome.asc'),
+      api('usuarios?select=id,nome,is_admin,criado_em'),
+      api('fc_configuracoes?select=*&order=chave.asc')
+    ]);
+    allCards    = await rc.json();
+    allBaralhos = await rb.json();
+    allUsuarios = await ru.json();
+    configs     = await rconf.json();
+  } catch(e){ toast('Erro ao carregar dados','err'); return; }
+
+  renderOverview();
+  renderCards();
+  renderDecks();
+  renderUsuarios();
+  renderConfig();
+}
+
+// ── VISÃO GERAL ──────────────────────────────────
+function renderOverview(){
+  document.getElementById('ov-total-cards').textContent    = allCards.length;
+  document.getElementById('ov-total-baralhos').textContent = allBaralhos.length;
+  document.getElementById('ov-total-usuarios').textContent = allUsuarios.length;
+
+  // Revisões por dia (próximos 7 dias)
+  const sched = document.getElementById('ov-schedule');
+  const rows = [];
+  const now = new Date();
+  for(let i=0;i<7;i++){
+    const d = new Date(now); d.setDate(d.getDate()+i);
+    const dStr = d.toDateString();
+    const count = allCards.filter(c=>{
+      const pr=new Date(c.proxima_revisao);
+      return pr.toDateString()===dStr || (i===0&&pr<=now);
+    }).length;
+    const label = i===0?'Hoje':i===1?'Amanhã':d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'numeric'});
+    const pct = allCards.length>0?Math.round(count/allCards.length*100):0;
+    rows.push(`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="font-size:12px;color:var(--text2);width:90px;flex-shrink:0">${label}</span>
+      <div style="flex:1;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${i===0?'var(--green)':'var(--blue)'};border-radius:99px;transition:width .4s"></div>
+      </div>
+      <span style="font-size:12px;color:var(--text3);width:32px;text-align:right">${count}</span>
+    </div>`);
+  }
+  sched.innerHTML = rows.join('') || '<div class="empty">Nenhuma revisão agendada</div>';
+
+  // Atividade por usuário
+  const usersDiv = document.getElementById('ov-users');
+  usersDiv.innerHTML = allUsuarios.map(u=>{
+    const cards = allCards.filter(c=>c.usuario_id===u.id);
+    const revistos = cards.filter(c=>c.total_revisoes>0).length;
+    const pct = cards.length>0?Math.round(revistos/cards.length*100):0;
+    return `<div class="user-row">
+      <div class="user-avatar">${u.nome[0].toUpperCase()}</div>
+      <div class="user-info">
+        <div class="user-name">${u.nome}${u.is_admin?' <span class="badge red" style="font-size:9px">admin</span>':''}</div>
+        <div class="user-stats">${cards.length} cards · ${revistos} revistos · ${pct}% progresso</div>
+        <div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty">Nenhum usuário</div>';
+}
+
+// ── CARDS ────────────────────────────────────────
+function renderCards(){
+  const q   = (document.getElementById('cards-search').value||'').toLowerCase();
+  const barF = document.getElementById('cards-filter-baralho').value;
+  const usrF = document.getElementById('cards-filter-usuario').value;
+
+  // Preencher filtros
+  const barSel  = document.getElementById('cards-filter-baralho');
+  const usrSel  = document.getElementById('cards-filter-usuario');
+  const curBar  = barSel.value; const curUsr = usrSel.value;
+  barSel.innerHTML = '<option value="">Todos os baralhos</option>' +
+    allBaralhos.map(b=>`<option value="${b.id}" ${b.id===curBar?'selected':''}>${b.nome}</option>`).join('');
+  usrSel.innerHTML = '<option value="">Todos os usuários</option>' +
+    allUsuarios.map(u=>`<option value="${u.id}" ${u.id===curUsr?'selected':''}>${u.nome}</option>`).join('');
+
+  let filtered = allCards.filter(c=>{
+    if(q && !c.frente.toLowerCase().includes(q) && !c.verso.toLowerCase().includes(q)) return false;
+    if(barF && c.baralho_id!==barF) return false;
+    if(usrF && c.usuario_id!==usrF) return false;
+    return true;
+  });
+
+  document.getElementById('cards-count').textContent = filtered.length + ' cards encontrados';
+
+  const tbody = document.getElementById('cards-tbody');
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="8" class="empty">Nenhum card encontrado</td></tr>';
+    return;
+  }
+
+  const now = new Date();
+  tbody.innerHTML = filtered.map(c=>{
+    const bar = allBaralhos.find(b=>b.id===c.baralho_id);
+    const usr = allUsuarios.find(u=>u.id===c.usuario_id);
+    const pr  = new Date(c.proxima_revisao);
+    const vencido = pr<=now && c.total_revisoes>0;
+    const prLabel = c.total_revisoes===0 ? '<span style="color:var(--blue)">Novo</span>'
+      : vencido ? '<span style="color:var(--red)">Vencido</span>'
+      : pr.toLocaleDateString('pt-BR');
+    return `<tr>
+      <td><input type="checkbox" class="chk-card" value="${c.id}" ${selectedCards.has(c.id)?'checked':''} onchange="toggleCardSel('${c.id}',this)"></td>
+      <td class="td-text" title="${c.frente}">${c.frente}</td>
+      <td class="td-text" title="${c.verso}">${c.verso}</td>
+      <td><span class="badge">${bar?bar.nome:'—'}</span></td>
+      <td style="font-size:12px;color:var(--text3)">${usr?usr.nome:'—'}</td>
+      <td style="text-align:center;font-size:13px">${c.total_revisoes}</td>
+      <td style="font-size:12px">${prLabel}</td>
+      <td class="td-actions">
+        <button class="btn-sm btn-edit" onclick="openEditCard('${c.id}')">✏️</button>
+        <button class="btn-sm btn-del" onclick="deleteCard('${c.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleCardSel(id, el){
+  if(el.checked) selectedCards.add(id); else selectedCards.delete(id);
+}
+function toggleAllCards(el){
+  document.querySelectorAll('.chk-card').forEach(c=>{
+    c.checked=el.checked;
+    if(el.checked) selectedCards.add(c.value); else selectedCards.delete(c.value);
+  });
+}
+
+async function deleteCard(id){
+  if(!confirm('Apagar este card?')) return;
+  await api('flashcards?id=eq.'+id,{method:'DELETE',headers:{'Prefer':'return=minimal'}});
+  allCards=allCards.filter(c=>c.id!==id);
+  selectedCards.delete(id);
+  renderCards(); renderOverview();
+  toast('Card apagado');
+}
+
+async function confirmDeleteAll(){
+  if(!selectedCards.size){ toast('Selecione cards primeiro','err'); return; }
+  if(!confirm(`Apagar ${selectedCards.size} card(s) selecionado(s)?`)) return;
+  for(const id of selectedCards){
+    await api('flashcards?id=eq.'+id,{method:'DELETE',headers:{'Prefer':'return=minimal'}});
+  }
+  allCards=allCards.filter(c=>!selectedCards.has(c.id));
+  selectedCards.clear();
+  renderCards(); renderOverview();
+  toast('Cards apagados');
+}
+
+function openEditCard(id){
+  const c=allCards.find(x=>x.id===id);
+  if(!c)return;
+  document.getElementById('edit-card-id').value=c.id;
+  document.getElementById('edit-frente').value=c.frente;
+  document.getElementById('edit-verso').value=c.verso;
+  document.getElementById('edit-proxima').value=
+    new Date(c.proxima_revisao).toISOString().slice(0,16);
+  document.getElementById('edit-intervalo').value=c.intervalo_dias||0;
+  document.getElementById('edit-total-rev').value=c.total_revisoes||0;
+  const sel=document.getElementById('edit-baralho');
+  sel.innerHTML=allBaralhos.map(b=>`<option value="${b.id}" ${b.id===c.baralho_id?'selected':''}>${b.nome}</option>`).join('');
+  document.getElementById('modal-card').style.display='flex';
+}
+
+async function saveCardEdit(){
+  const id=document.getElementById('edit-card-id').value;
+  const body={
+    frente:   document.getElementById('edit-frente').value.trim(),
+    verso:    document.getElementById('edit-verso').value.trim(),
+    baralho_id: document.getElementById('edit-baralho').value,
+    proxima_revisao: new Date(document.getElementById('edit-proxima').value).toISOString(),
+    intervalo_dias: parseFloat(document.getElementById('edit-intervalo').value)||0,
+    total_revisoes: parseInt(document.getElementById('edit-total-rev').value)||0,
+  };
+  if(!body.frente||!body.verso){toast('Preencha frente e verso','err');return;}
+  await api('flashcards?id=eq.'+id,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify(body)});
+  const idx=allCards.findIndex(c=>c.id===id);
+  if(idx>=0) allCards[idx]={...allCards[idx],...body};
+  document.getElementById('modal-card').style.display='none';
+  renderCards(); renderOverview();
+  toast('Card salvo ✓');
+}
+
+// ── BARALHOS ─────────────────────────────────────
+function renderDecks(){
+  const tbody=document.getElementById('decks-tbody');
+  if(!allBaralhos.length){
+    tbody.innerHTML='<tr><td colspan="5" class="empty">Nenhum baralho</td></tr>';return;
+  }
+  tbody.innerHTML=allBaralhos.map(b=>{
+    const usr=allUsuarios.find(u=>u.id===b.usuario_id);
+    const cnt=allCards.filter(c=>c.baralho_id===b.id).length;
+    const criado=new Date(b.criado_em).toLocaleDateString('pt-BR');
+    return `<tr>
+      <td><strong>${b.nome}</strong></td>
+      <td style="font-size:12px;color:var(--text3)">${usr?usr.nome:'—'}</td>
+      <td><span class="badge">${cnt}</span></td>
+      <td style="font-size:12px;color:var(--text3)">${criado}</td>
+      <td class="td-actions">
+        <button class="btn-sm btn-edit" onclick="openEditDeck('${b.id}')">✏️</button>
+        <button class="btn-sm btn-del" onclick="deleteDeck('${b.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openNewDeckModal(){
+  document.getElementById('deck-modal-title').textContent='📦 Novo Baralho';
+  document.getElementById('edit-deck-id').value='';
+  document.getElementById('edit-deck-nome').value='';
+  const mv=document.getElementById('edit-deck-mover');
+  mv.innerHTML='<option value="">—</option>';
+  document.getElementById('modal-deck').style.display='flex';
+  setTimeout(()=>document.getElementById('edit-deck-nome').focus(),50);
+}
+
+function openEditDeck(id){
+  const b=allBaralhos.find(x=>x.id===id);
+  if(!b)return;
+  document.getElementById('deck-modal-title').textContent='✏️ Editar Baralho';
+  document.getElementById('edit-deck-id').value=b.id;
+  document.getElementById('edit-deck-nome').value=b.nome;
+  const mv=document.getElementById('edit-deck-mover');
+  mv.innerHTML='<option value="">Não mover</option>'+
+    allBaralhos.filter(x=>x.id!==id).map(x=>`<option value="${x.id}">${x.nome}</option>`).join('');
+  document.getElementById('modal-deck').style.display='flex';
+}
+
+async function saveDeckEdit(){
+  const id=document.getElementById('edit-deck-id').value;
+  const nome=document.getElementById('edit-deck-nome').value.trim();
+  const moverPara=document.getElementById('edit-deck-mover').value;
+  if(!nome){toast('Digite um nome','err');return;}
+
+  if(id){
+    // Editar existente
+    if(moverPara){
+      // Mover todos os cards para outro baralho
+      await api('flashcards?baralho_id=eq.'+id,{method:'PATCH',
+        headers:{'Prefer':'return=minimal'},body:JSON.stringify({baralho_id:moverPara})});
+      allCards.filter(c=>c.baralho_id===id).forEach(c=>c.baralho_id=moverPara);
+    }
+    await api('baralhos?id=eq.'+id,{method:'PATCH',
+      headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome})});
+    const idx=allBaralhos.findIndex(b=>b.id===id);
+    if(idx>=0) allBaralhos[idx].nome=nome;
+    toast('Baralho atualizado ✓');
+  } else {
+    // Novo baralho
+    const r=await api('baralhos',{method:'POST',body:JSON.stringify({usuario_id:user.id,nome})});
+    allBaralhos.push((await r.json())[0]);
+    toast('Baralho criado ✓');
+  }
+  document.getElementById('modal-deck').style.display='none';
+  renderDecks(); renderCards(); renderOverview();
+}
+
+async function deleteDeck(id){
+  const cnt=allCards.filter(c=>c.baralho_id===id).length;
+  if(!confirm(`Apagar este baralho${cnt>0?' e seus '+cnt+' card(s)':''}?`))return;
+  await api('baralhos?id=eq.'+id,{method:'DELETE',headers:{'Prefer':'return=minimal'}});
+  allBaralhos=allBaralhos.filter(b=>b.id!==id);
+  allCards=allCards.filter(c=>c.baralho_id!==id);
+  renderDecks(); renderCards(); renderOverview();
+  toast('Baralho apagado');
+}
+
+// ── USUÁRIOS ─────────────────────────────────────
+function renderUsuarios(){
+  const div=document.getElementById('usuarios-list');
+  div.innerHTML=allUsuarios.map(u=>{
+    const cards=allCards.filter(c=>c.usuario_id===u.id);
+    const novos=cards.filter(c=>c.total_revisoes===0).length;
+    const revistos=cards.filter(c=>c.total_revisoes>0).length;
+    const vencidos=cards.filter(c=>new Date(c.proxima_revisao)<=new Date()&&c.total_revisoes>0).length;
+    const pct=cards.length>0?Math.round(revistos/cards.length*100):0;
+    const diffs={hd2:0,hd:0,md:0,ez:0};
+    return `<div class="user-row">
+      <div class="user-avatar">${u.nome[0].toUpperCase()}</div>
+      <div class="user-info">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="user-name">${u.nome}</div>
+          ${u.is_admin?'<span class="badge red" style="font-size:9px">admin</span>':''}
+        </div>
+        <div class="user-stats">
+          ${cards.length} cards total ·
+          <span style="color:var(--blue)">${novos} novos</span> ·
+          <span style="color:var(--green)">${revistos} revistos</span> ·
+          <span style="color:var(--red)">${vencidos} vencidos hoje</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <div class="progress-mini" style="flex:1"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:11px;color:var(--text3)">${pct}%</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty">Nenhum usuário</div>';
+}
+
+// ── CONFIGURAÇÕES ────────────────────────────────
+const CONFIG_META = {
+  max_novos_dia:  {label:'Máx. novos por dia',   desc:'Cards novos exibidos por dia por usuário', suffix:'cards'},
+  intervalo_hd2:  {label:'Muito Difícil',         desc:'Intervalo em minutos',                    suffix:'min'},
+  intervalo_hd:   {label:'Difícil',               desc:'Intervalo em dias',                       suffix:'dias'},
+  intervalo_md:   {label:'Médio',                 desc:'Intervalo em dias',                       suffix:'dias'},
+  intervalo_ez:   {label:'Fácil (base)',           desc:'Intervalo base em dias',                  suffix:'dias'},
+};
+
+function renderConfig(){
+  const grid=document.getElementById('config-grid');
+  grid.innerHTML=configs.map(c=>{
+    const meta=CONFIG_META[c.chave]||{label:c.chave,desc:c.descricao||'',suffix:''};
+    return `<div class="config-item">
+      <div class="config-label">${meta.label}</div>
+      <div class="config-desc">${meta.desc}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <input class="config-input" type="number" id="cfg-${c.chave}" value="${c.valor}" min="0" step="1">
+        <span style="font-size:12px;color:var(--text3)">${meta.suffix}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveConfig(){
+  for(const c of configs){
+    const el=document.getElementById('cfg-'+c.chave);
+    if(!el)continue;
+    const val=el.value;
+    await api('fc_configuracoes?chave=eq.'+c.chave,{
+      method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({valor:val,atualizado_em:new Date().toISOString()})
+    });
+    c.valor=val;
+  }
+  toast('Configurações salvas ✓');
+}
+
+async function resetAllProgress(){
+  if(!confirm('ATENÇÃO: Isso vai resetar o progresso de TODOS os usuários nos flashcards. Continuar?'))return;
+  if(!confirm('Tem certeza? Esta ação não pode ser desfeita.'))return;
+  await api('flashcards',{method:'PATCH',
+    headers:{'Prefer':'return=minimal'},
+    body:JSON.stringify({proxima_revisao:new Date().toISOString(),intervalo_dias:0,total_revisoes:0,facil_consecutivo:0})
+  });
+  allCards.forEach(c=>{c.proxima_revisao=new Date().toISOString();c.intervalo_dias=0;c.total_revisoes=0;c.facil_consecutivo=0;});
+  renderCards(); renderOverview(); renderUsuarios();
+  toast('Progresso resetado');
+}
+
+// ── ESCAPE ───────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('modal-card').style.display='none';
+    document.getElementById('modal-deck').style.display='none';
+  }
+});
+
+loadAll();
+</script>
+</body>
+</html>
