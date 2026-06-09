@@ -133,6 +133,17 @@ function logout() {
 }
 
 document.getElementById('username').textContent = user.nome;
+
+// Mostrar botão admin se for admin
+if (user.is_admin) {
+  const adminBtn = document.createElement('a');
+  adminBtn.href = 'admin-flashcards.html';
+  adminBtn.style = 'font-size:11px;color:var(--text3);text-decoration:none;margin-left:8px;border:1px solid var(--border2);padding:3px 8px;border-radius:99px;transition:all .15s';
+  adminBtn.textContent = '⚙ Admin';
+  adminBtn.onmouseover = () => { adminBtn.style.color='var(--green)'; adminBtn.style.borderColor='var(--green)'; };
+  adminBtn.onmouseout  = () => { adminBtn.style.color='var(--text3)'; adminBtn.style.borderColor='var(--border2)'; };
+  document.querySelector('.user').insertBefore(adminBtn, document.querySelector('.btn-logout'));
+}
 const h = new Date().getHours();
 document.getElementById('greeting').textContent = (h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+', '+user.nome+'! 👋';
 
