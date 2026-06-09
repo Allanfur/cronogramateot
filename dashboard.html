@@ -4,155 +4,694 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f172a">
-<title>TEOT — Painel</title>
+<title>TEOT — Flashcards</title>
 <style>
-:root{--bg:#0f172a;--surface:#1e293b;--surface2:#273549;--border:rgba(255,255,255,.08);
-  --border2:rgba(255,255,255,.18);--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
-  --green:#10b981;--green-bg:rgba(16,185,129,.12);--green-border:rgba(16,185,129,.35);
-  --red:#ef4444;--radius:12px;--radius-sm:8px}
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#273549;--surface3:#2d3f55;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --green:#10b981;--green-bg:rgba(16,185,129,.12);--green-border:rgba(16,185,129,.3);
+  --blue:#3b82f6;--red:#ef4444;--orange:#f97316;--yellow:#eab308;
+  --radius:12px;--radius-sm:8px;
+}
 html[data-theme='light']{
-  --bg:#f1f5f9;--surface:#ffffff;--surface2:#e2e8f0;--surface3:#cbd5e1;
+  --bg:#f1f5f9;--surface:#fff;--surface2:#e2e8f0;--surface3:#cbd5e1;
   --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.15);
   --text:#0f172a;--text2:#334155;--text3:#64748b;
   --green:#059669;--green-bg:rgba(5,150,105,.1);--green-border:rgba(5,150,105,.3);
-  --red:#dc2626}
+  --red:#dc2626;--orange:#ea580c;--yellow:#ca8a04;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
-.header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:50}
-.logo{font-size:16px;font-weight:800}
-.logo span{color:var(--green)}
-.user{display:flex;align-items:center;gap:10px}
-.username{font-size:13px;color:var(--text2)}
-.btn-logout{font-size:12px;padding:5px 12px;border-radius:var(--radius-sm);
-  border:1px solid var(--border2);background:transparent;color:var(--text3);
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:12px}
+.btn-back{font-size:13px;color:var(--text2);background:transparent;border:none;
+  cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:4px}
+.btn-back:hover{color:var(--green)}
+.header-title{font-size:15px;font-weight:800}
+.header-title span{color:var(--green)}
+
+/* SCREENS */
+.screen{display:none;padding:20px 16px 60px;max-width:640px;margin:0 auto}
+.screen.active{display:block}
+
+/* DASHBOARD */
+.progress-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.progress-title{font-size:12px;font-weight:700;letter-spacing:.06em;
+  color:var(--text3);margin-bottom:14px}
+.progress-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-box{background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.stat-num{font-size:24px;font-weight:800;color:var(--green)}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+.btn-study{width:100%;background:var(--green);color:#fff;font-size:15px;font-weight:700;
+  padding:13px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  transition:opacity .15s;margin-bottom:8px}
+.btn-study:hover{opacity:.9}
+.btn-study:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{width:100%;background:transparent;color:var(--text2);font-size:14px;
+  padding:11px;border-radius:var(--radius-sm);border:1px solid var(--border2);
   cursor:pointer;transition:all .15s}
-.btn-logout:hover{color:var(--red);border-color:var(--red)}
-.body{padding:20px 16px 40px;max-width:600px;margin:0 auto}
-.greeting{font-size:20px;font-weight:700;margin-bottom:4px}
-.sub{font-size:13px;color:var(--text3);margin-bottom:24px}
-.section-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:12px}
-.crono-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:18px;cursor:pointer;transition:border-color .15s,transform .15s;
-  display:flex;align-items:center;gap:14px}
-.crono-card:hover{border-color:var(--green)}
-.crono-card:active{transform:scale(.98)}
-.card-icon{width:44px;height:44px;border-radius:10px;background:var(--green-bg);
-  border:1px solid var(--green-border);display:flex;align-items:center;
-  justify-content:center;font-size:20px;flex-shrink:0}
-.card-info{flex:1}
-.card-title{font-size:15px;font-weight:700}
-.card-desc{font-size:12px;color:var(--text3);margin-top:2px}
-.card-prog{margin-top:10px}
-.prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px}
-.prog-bar{height:4px;background:var(--surface2);border-radius:99px;overflow:hidden}
-.prog-fill{height:100%;border-radius:99px;background:var(--green);transition:width .4s}
-.arrow{font-size:18px;color:var(--text3);flex-shrink:0}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.section-lbl{font-size:11px;font-weight:700;letter-spacing:.06em;
+  color:var(--text3);margin:20px 0 10px}
+.decks-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:400px){.decks-grid{grid-template-columns:1fr}}
+.deck-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;cursor:pointer;
+  transition:border-color .15s;position:relative}
+.deck-card:hover{border-color:var(--green)}
+.deck-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.deck-count{font-size:12px;color:var(--text3)}
+.deck-del{position:absolute;top:10px;right:10px;background:transparent;border:none;
+  cursor:pointer;color:var(--text3);font-size:13px;opacity:0;transition:opacity .15s}
+.deck-card:hover .deck-del{opacity:1}
+.deck-del:hover{color:var(--red)}
+.empty-decks{text-align:center;padding:32px;color:var(--text3);font-size:14px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:flex-end;justify-content:center;z-index:200;padding:0}
+@media(min-width:500px){.modal-overlay{align-items:center;padding:16px}}
+.modal{background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius) var(--radius) 0 0;padding:24px;width:100%;max-width:480px}
+@media(min-width:500px){.modal{border-radius:var(--radius)}}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.field textarea,.field input,.field select{
+  width:100%;background:var(--bg);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;
+  color:var(--text);outline:none;font-family:inherit;transition:border-color .2s;
+  -webkit-appearance:none}
+.field textarea{resize:vertical;min-height:80px}
+.field textarea:focus,.field input:focus,.field select:focus{border-color:var(--green)}
+.field select option{background:var(--surface)}
+.modal-btns{display:flex;gap:8px;margin-top:4px}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border2);
+  color:var(--text3);padding:10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px}
+.btn-save{flex:2;background:var(--green);color:#fff;border:none;
+  padding:10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:600}
+.btn-save-more{flex:2;background:var(--surface2);color:var(--text2);border:1px solid var(--border2);
+  padding:10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px}
+
+/* STUDY SCREEN */
+.study-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.study-progress-bar{height:4px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:24px}
+.study-progress-fill{height:100%;background:var(--green);border-radius:99px;transition:width .4s}
+.study-info{font-size:13px;color:var(--text3)}
+.study-deck{font-size:12px;color:var(--green);font-weight:600}
+
+/* FLIP CARD */
+.flip-scene{perspective:1000px;width:100%;margin-bottom:24px}
+.flip-card{width:100%;min-height:220px;position:relative;
+  transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);cursor:default}
+.flip-card.flipped{transform:rotateY(180deg)}
+.flip-face{position:absolute;inset:0;backface-visibility:hidden;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:28px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;min-height:220px}
+.flip-back{transform:rotateY(180deg);background:var(--surface2)}
+.flip-label{font-size:10px;font-weight:700;letter-spacing:.08em;
+  color:var(--text3);margin-bottom:12px;text-transform:uppercase}
+.flip-text{font-size:18px;font-weight:600;line-height:1.5;color:var(--text)}
+.flip-hint{font-size:12px;color:var(--text3);margin-top:12px}
+
+/* STUDY BUTTONS */
+.btn-reveal{width:100%;background:var(--blue);color:#fff;font-size:15px;font-weight:700;
+  padding:14px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  transition:opacity .15s;margin-bottom:8px}
+.btn-reveal:hover{opacity:.9}
+.rating-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rating-btn{padding:12px 8px;border-radius:var(--radius-sm);border:none;
+  cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;
+  display:flex;flex-direction:column;align-items:center;gap:3px}
+.rating-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.rating-btn:active{transform:scale(.97)}
+.rating-btn .interval{font-size:10px;font-weight:400;opacity:.8}
+.btn-hard2{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+.btn-hard{background:rgba(249,115,22,.15);color:#f97316;border:1px solid rgba(249,115,22,.3)}
+.btn-medium{background:rgba(234,179,8,.15);color:#eab308;border:1px solid rgba(234,179,8,.3)}
+.btn-easy{background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3)}
+html[data-theme='light'] .btn-hard2{background:rgba(220,38,38,.08);color:#dc2626}
+html[data-theme='light'] .btn-hard{background:rgba(234,88,12,.08);color:#ea580c}
+html[data-theme='light'] .btn-medium{background:rgba(202,138,4,.08);color:#ca8a04}
+html[data-theme='light'] .btn-easy{background:rgba(5,150,105,.08);color:#059669}
+
+/* SUMMARY */
+.summary-icon{font-size:56px;text-align:center;margin:16px 0}
+.summary-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:4px}
+.summary-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:24px}
+.summary-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.summary-stat{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px;text-align:center}
+.summary-stat .n{font-size:22px;font-weight:800}
+.summary-stat .l{font-size:11px;color:var(--text3);margin-top:2px}
+.distrib{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.distrib-title{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:12px}
+.distrib-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.distrib-label{font-size:12px;color:var(--text2);width:90px;flex-shrink:0}
+.distrib-bar-wrap{flex:1;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.distrib-bar-fill{height:100%;border-radius:99px;transition:width .6s}
+.distrib-count{font-size:12px;color:var(--text3);width:24px;text-align:right;flex-shrink:0}
+.next-session{background:var(--green-bg);border:1px solid var(--green-border);
+  border-radius:var(--radius);padding:14px;text-align:center;margin-bottom:16px;font-size:13px;color:var(--text2)}
+.next-session strong{color:var(--green)}
+.btn-home{width:100%;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);font-size:14px;padding:12px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .15s}
+.btn-home:hover{border-color:var(--green);color:var(--green)}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="logo">TEOT <span>Estudos</span></div>
-  <div class="user">
-    <span class="username" id="username"></span>
-    <div id="theme-btn" onclick="toggleTheme()" title="Alternar tema" style="
-      position:relative;width:52px;height:26px;border-radius:99px;
-      background:var(--surface2);border:1px solid var(--border2);
-      cursor:pointer;flex-shrink:0;display:flex;
-      align-items:center;justify-content:space-between;padding:0 6px">
-      <span style="font-size:10px;line-height:1">🌙</span>
-      <span style="font-size:10px;line-height:1">☀️</span>
-      <span id="theme-pill" style="position:absolute;top:3px;left:3px;
-        width:18px;height:18px;border-radius:99px;background:var(--green);
-        transition:transform .25s cubic-bezier(.4,0,.2,1)"></span>
-    </div>
-    <button class="btn-logout" onclick="logout()">Sair</button>
+  <div class="header-left">
+    <button class="btn-back" onclick="goBack()">‹ Painel</button>
+    <div class="header-title">TEOT <span>Flashcards</span></div>
+  </div>
+  <div id="theme-btn" onclick="toggleTheme()" title="Alternar tema" style="
+    position:relative;width:52px;height:26px;border-radius:99px;
+    background:var(--surface2);border:1px solid var(--border2);
+    cursor:pointer;flex-shrink:0;display:flex;
+    align-items:center;justify-content:space-between;padding:0 6px">
+    <span style="font-size:10px;line-height:1">🌙</span>
+    <span style="font-size:10px;line-height:1">☀️</span>
+    <span id="theme-pill" style="position:absolute;top:3px;left:3px;
+      width:18px;height:18px;border-radius:99px;background:var(--green);
+      transition:transform .25s cubic-bezier(.4,0,.2,1)"></span>
   </div>
 </div>
 
-<div class="body">
-  <div class="greeting" id="greeting">Olá! 👋</div>
-  <div class="sub">Escolha um cronograma para estudar</div>
-
-  <div class="section-lbl">CRONOGRAMAS DISPONÍVEIS</div>
-  <div class="crono-card" onclick="window.location.href='cronograma.html'" style="margin-bottom:20px">
-    <div class="card-icon">📋</div>
-    <div class="card-info">
-      <div class="card-title">Cronograma TEOT</div>
-      <div class="card-desc">35 semanas · Ortopedia e Traumatologia</div>
-      <div class="card-prog">
-        <div class="prog-row">
-          <span>Seu progresso</span>
-          <span id="pct">carregando...</span>
-        </div>
-        <div class="prog-bar"><div class="prog-fill" id="bar" style="width:0%"></div></div>
+<!-- ═══ DASHBOARD ═══ -->
+<div class="screen active" id="screen-dash">
+  <div class="progress-card">
+    <div class="progress-title">📊 SESSÃO DE HOJE</div>
+    <div class="progress-stats">
+      <div class="stat-box">
+        <div class="stat-num" id="stat-novos">--</div>
+        <div class="stat-lbl">Novos (máx. 5)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-revisoes">--</div>
+        <div class="stat-lbl">Revisões pendentes</div>
       </div>
     </div>
-    <div class="arrow">›</div>
+    <button class="btn-study" id="btn-estudar" onclick="startStudy()">⚡ Estudar Agora</button>
+    <button class="btn-outline" onclick="openCreateModal(null)">+ Criar Flashcard</button>
   </div>
 
-  <div class="section-lbl">FERRAMENTAS</div>
-  <div class="crono-card" onclick="window.location.href='notas.html'">
-    <div class="card-icon">📝</div>
-    <div class="card-info">
-      <div class="card-title">Bloco de Notas</div>
-      <div class="card-desc">Anotações pessoais com pastas e subpastas</div>
+  <div class="section-lbl">MEUS BARALHOS</div>
+  <div class="decks-grid" id="decks-grid">
+    <div class="empty-decks" style="grid-column:1/-1">Carregando...</div>
+  </div>
+</div>
+
+<!-- ═══ STUDY ═══ -->
+<div class="screen" id="screen-study">
+  <div class="study-header">
+    <span class="study-deck" id="study-deck-name">Estudando</span>
+    <span class="study-info" id="study-counter">0 / 0</span>
+  </div>
+  <div class="study-progress-bar">
+    <div class="study-progress-fill" id="study-prog" style="width:0%"></div>
+  </div>
+
+  <div class="flip-scene">
+    <div class="flip-card" id="flip-card">
+      <div class="flip-face flip-front">
+        <div class="flip-label">Pergunta</div>
+        <div class="flip-text" id="card-front">—</div>
+        <div class="flip-hint">Toque para revelar</div>
+      </div>
+      <div class="flip-face flip-back">
+        <div class="flip-label">Resposta</div>
+        <div class="flip-text" id="card-back">—</div>
+      </div>
     </div>
-    <div class="arrow">›</div>
+  </div>
+
+  <button class="btn-reveal" id="btn-reveal" onclick="revealCard()">👁 Revelar Resposta</button>
+
+  <div id="rating-area" style="display:none">
+    <div class="rating-btns">
+      <button class="rating-btn btn-hard2" onclick="rateCard(0)">
+        🔴 Muito Difícil<span class="interval">10 min</span>
+      </button>
+      <button class="rating-btn btn-hard" onclick="rateCard(1)">
+        🟠 Difícil<span class="interval">1 dia</span>
+      </button>
+      <button class="rating-btn btn-medium" onclick="rateCard(2)">
+        🟡 Médio<span class="interval">3 dias</span>
+      </button>
+      <button class="rating-btn btn-easy" onclick="rateCard(3)">
+        🟢 Fácil<span class="interval" id="easy-interval">7 dias</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUMMARY ═══ -->
+<div class="screen" id="screen-summary">
+  <div class="summary-icon">🎉</div>
+  <div class="summary-title">Sessão concluída!</div>
+  <div class="summary-sub" id="summary-sub">Você estudou X cards hoje</div>
+  <div class="summary-stats">
+    <div class="summary-stat">
+      <div class="n" id="sum-total">0</div><div class="l">Estudados</div>
+    </div>
+    <div class="summary-stat">
+      <div class="n" id="sum-novos">0</div><div class="l">Novos</div>
+    </div>
+    <div class="summary-stat">
+      <div class="n" id="sum-rev">0</div><div class="l">Revisões</div>
+    </div>
+  </div>
+  <div class="distrib">
+    <div class="distrib-title">DISTRIBUIÇÃO DE DIFICULDADE</div>
+    <div class="distrib-row">
+      <span class="distrib-label">🔴 Muito Difícil</span>
+      <div class="distrib-bar-wrap"><div class="distrib-bar-fill" id="bar-hd2" style="background:#ef4444;width:0%"></div></div>
+      <span class="distrib-count" id="cnt-hd2">0</span>
+    </div>
+    <div class="distrib-row">
+      <span class="distrib-label">🟠 Difícil</span>
+      <div class="distrib-bar-wrap"><div class="distrib-bar-fill" id="bar-hd" style="background:#f97316;width:0%"></div></div>
+      <span class="distrib-count" id="cnt-hd">0</span>
+    </div>
+    <div class="distrib-row">
+      <span class="distrib-label">🟡 Médio</span>
+      <div class="distrib-bar-wrap"><div class="distrib-bar-fill" id="bar-md" style="background:#eab308;width:0%"></div></div>
+      <span class="distrib-count" id="cnt-md">0</span>
+    </div>
+    <div class="distrib-row">
+      <span class="distrib-label">🟢 Fácil</span>
+      <div class="distrib-bar-wrap"><div class="distrib-bar-fill" id="bar-ez" style="background:#10b981;width:0%"></div></div>
+      <span class="distrib-count" id="cnt-ez">0</span>
+    </div>
+  </div>
+  <div class="next-session" id="next-session">Próxima sessão: <strong>amanhã</strong></div>
+  <button class="btn-home" onclick="showScreen('screen-dash');loadDash()">← Voltar ao Dashboard</button>
+</div>
+
+<!-- ═══ MODAL CRIAR ═══ -->
+<div class="modal-overlay" id="modal-create" style="display:none" onclick="closeCreateModal(event)">
+  <div class="modal">
+    <h3 id="modal-title">✏️ Novo Flashcard</h3>
+    <div class="field">
+      <label>Frente (pergunta)</label>
+      <textarea id="fc-frente" placeholder="Ex: O que é síndrome compartimental?"></textarea>
+    </div>
+    <div class="field">
+      <label>Verso (resposta)</label>
+      <textarea id="fc-verso" placeholder="Ex: Aumento de pressão dentro de compartimento..."></textarea>
+    </div>
+    <div class="field">
+      <label>Baralho</label>
+      <input id="fc-baralho" list="baralhos-list" placeholder="Ex: Conceitos Básicos" autocomplete="off">
+      <datalist id="baralhos-list"></datalist>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeCreateModal()">Cancelar</button>
+      <button class="btn-save-more" onclick="saveCard(true)">Salvar + Novo</button>
+      <button class="btn-save" onclick="saveCard(false)">Salvar</button>
+    </div>
   </div>
 </div>
 
 <script>
+// ── SESSÃO ──────────────────────────────────────
 const session = localStorage.getItem('teot_session');
-if (!session) { window.location.href = 'index.html'; throw new Error('no session'); }
+if (!session) { window.location.href='index.html'; throw new Error('no session'); }
 const user = JSON.parse(session);
 
+// ── SUPABASE ────────────────────────────────────
 const SB_URL = 'https://piziokskqrrnxahabhbt.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpemlva3NrcXJybnhhaGFiaGJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTY5NzMsImV4cCI6MjA5NTEzMjk3M30.elc7_qtJcm-HL4l8tIPvH9KNQMLMVEg9Ga2jwJPhA7g';
-const HEADS = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+const H = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
 
-function api(path,opts={}) {
-  const c=new AbortController(),t=setTimeout(()=>c.abort(),8000);
-  return fetch(SB_URL+'/rest/v1/'+path,{...opts,signal:c.signal,headers:{...HEADS,...(opts.headers||{})}}).finally(()=>clearTimeout(t));
+function api(path, opts={}) {
+  const c=new AbortController(), t=setTimeout(()=>c.abort(),10000);
+  return fetch(SB_URL+'/rest/v1/'+path,{...opts,signal:c.signal,headers:{...H,...(opts.headers||{})}}).finally(()=>clearTimeout(t));
 }
 
-function logout() {
-  localStorage.removeItem('teot_session');
-  window.location.href = 'index.html';
-}
+// ── ESTADO ──────────────────────────────────────
+let allCards = [];
+let baralhos = [];
+let studyQueue = [];
+let studyIdx = 0;
+let retryQueue = []; // cards "muito difícil" para repetir na sessão
+let sessionStats = { total:0, novos:0, revisoes:0, hd2:0, hd:0, md:0, ez:0 };
+let novosHoje = 0;
+const MAX_NOVOS = 5;
 
-document.getElementById('username').textContent = user.nome;
-const h = new Date().getHours();
-document.getElementById('greeting').textContent = (h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+', '+user.nome+'! 👋';
-
-async function loadProgress() {
-  try {
-    const r = await api('progresso_v2?usuario_id=eq.'+user.id+'&select=item_id');
-    const rows = await r.json();
-    const pct = Math.round(rows.length / 218 * 100);
-    document.getElementById('pct').textContent = pct + '%';
-    document.getElementById('bar').style.width = pct + '%';
-  } catch(e) { document.getElementById('pct').textContent = '--'; }
-}
-loadProgress();
-
+// ── TEMA ────────────────────────────────────────
 function loadTheme() {
   const t = localStorage.getItem('teot_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', t);
   const pill = document.getElementById('theme-pill');
-  if (pill) pill.style.transform = t === 'dark' ? 'translateX(0)' : 'translateX(26px)';
+  if (pill) pill.style.transform = t==='dark' ? 'translateX(0)' : 'translateX(26px)';
 }
 function toggleTheme() {
-  const next = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+  const next = (document.documentElement.getAttribute('data-theme')||'dark')==='dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('teot_theme', next);
   const pill = document.getElementById('theme-pill');
-  if (pill) pill.style.transform = next === 'dark' ? 'translateX(0)' : 'translateX(26px)';
+  if (pill) pill.style.transform = next==='dark' ? 'translateX(0)' : 'translateX(26px)';
 }
 loadTheme();
+
+// ── NAVEGAÇÃO ───────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  if (document.getElementById('screen-study').classList.contains('active')) {
+    if (!confirm('Sair da sessão? O progresso parcial será perdido.')) return;
+  }
+  window.location.href = 'dashboard.html';
+}
+
+// ── CARREGAR DASHBOARD ──────────────────────────
+async function loadDash() {
+  try {
+    const [rc, rb] = await Promise.all([
+      api('flashcards?usuario_id=eq.'+user.id+'&select=*&order=criado_em.asc'),
+      api('baralhos?usuario_id=eq.'+user.id+'&select=*&order=nome.asc')
+    ]);
+    allCards = await rc.json();
+    baralhos = await rb.json();
+  } catch(e) { allCards=[]; baralhos=[]; }
+
+  const now = new Date();
+  const todayStr = now.toDateString();
+
+  // Cards que vencem hoje (revisões)
+  const vencidos = allCards.filter(c =>
+    c.total_revisoes > 0 && new Date(c.proxima_revisao) <= now
+  );
+  // Cards novos (nunca estudados)
+  const novos = allCards.filter(c => c.total_revisoes === 0);
+  // Quantos novos já foram estudados hoje (via localStorage)
+  const novosHojeKey = 'teot_fc_novos_'+user.id+'_'+todayStr;
+  novosHoje = parseInt(localStorage.getItem(novosHojeKey)||'0');
+  const novosDisponiveis = Math.max(0, Math.min(MAX_NOVOS - novosHoje, novos.length));
+
+  document.getElementById('stat-novos').textContent = novosDisponiveis + '/' + MAX_NOVOS;
+  document.getElementById('stat-revisoes').textContent = vencidos.length;
+
+  const totalSessao = vencidos.length + novosDisponiveis;
+  const btnEstudar = document.getElementById('btn-estudar');
+  btnEstudar.disabled = totalSessao === 0;
+  btnEstudar.textContent = totalSessao > 0
+    ? '⚡ Estudar Agora (' + totalSessao + ' cards)'
+    : '✅ Nada para hoje!';
+
+  // Atualizar datalist de baralhos
+  const dl = document.getElementById('baralhos-list');
+  dl.innerHTML = baralhos.map(b=>`<option value="${b.nome}">`).join('');
+
+  // Renderizar baralhos
+  renderDecks();
+}
+
+function renderDecks() {
+  const grid = document.getElementById('decks-grid');
+  if (!baralhos.length) {
+    grid.innerHTML = '<div class="empty-decks" style="grid-column:1/-1">Nenhum baralho ainda.<br>Crie seu primeiro flashcard!</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  baralhos.forEach(b => {
+    const total = allCards.filter(c => c.baralho_id === b.id).length;
+    const venc  = allCards.filter(c => c.baralho_id === b.id && new Date(c.proxima_revisao) <= new Date()).length;
+    const div = document.createElement('div');
+    div.className = 'deck-card';
+    div.innerHTML = `
+      <button class="deck-del" onclick="deleteDeck('${b.id}',event)" title="Apagar baralho">✕</button>
+      <div class="deck-name">📦 ${b.nome}</div>
+      <div class="deck-count">${total} cards${venc>0?' · <span style="color:var(--green)">'+venc+' p/ revisar</span>':''}</div>`;
+    div.onclick = (e) => { if(!e.target.classList.contains('deck-del')) openCreateModal(b.nome); };
+    grid.appendChild(div);
+  });
+}
+
+// ── CRIAR FLASHCARD ─────────────────────────────
+function openCreateModal(baralhoNome) {
+  document.getElementById('fc-frente').value = '';
+  document.getElementById('fc-verso').value = '';
+  document.getElementById('fc-baralho').value = baralhoNome || '';
+  document.getElementById('modal-create').style.display = 'flex';
+  setTimeout(()=>document.getElementById('fc-frente').focus(), 50);
+}
+
+function closeCreateModal(e) {
+  if (e && e.target !== document.getElementById('modal-create')) return;
+  document.getElementById('modal-create').style.display = 'none';
+}
+
+async function saveCard(andMore) {
+  const frente = document.getElementById('fc-frente').value.trim();
+  const verso  = document.getElementById('fc-verso').value.trim();
+  const barNome = document.getElementById('fc-baralho').value.trim() || 'Geral';
+  if (!frente || !verso) { alert('Preencha a frente e o verso do card.'); return; }
+
+  // Garantir que o baralho existe
+  let baralho = baralhos.find(b => b.nome.toLowerCase() === barNome.toLowerCase());
+  if (!baralho) {
+    try {
+      const rb = await api('baralhos', {method:'POST', body:JSON.stringify({usuario_id:user.id, nome:barNome})});
+      baralho = (await rb.json())[0];
+      baralhos.push(baralho);
+      const dl = document.getElementById('baralhos-list');
+      dl.innerHTML += `<option value="${baralho.nome}">`;
+    } catch(e) { alert('Erro ao criar baralho.'); return; }
+  }
+
+  try {
+    const rc = await api('flashcards', {
+      method:'POST',
+      body: JSON.stringify({
+        usuario_id: user.id,
+        baralho_id: baralho.id,
+        frente, verso,
+        proxima_revisao: new Date().toISOString(),
+        intervalo_dias: 0,
+        total_revisoes: 0,
+        facil_consecutivo: 0
+      })
+    });
+    const card = (await rc.json())[0];
+    allCards.push(card);
+    renderDecks();
+    await loadDash();
+    if (andMore) {
+      document.getElementById('fc-frente').value = '';
+      document.getElementById('fc-verso').value = '';
+      document.getElementById('fc-frente').focus();
+    } else {
+      document.getElementById('modal-create').style.display = 'none';
+    }
+  } catch(e) { alert('Erro ao salvar card.'); }
+}
+
+async function deleteDeck(id, e) {
+  e.stopPropagation();
+  if (!confirm('Apagar este baralho e todos os seus cards?')) return;
+  await api('baralhos?id=eq.'+id, {method:'DELETE', headers:{'Prefer':'return=minimal'}});
+  baralhos = baralhos.filter(b => b.id !== id);
+  allCards = allCards.filter(c => c.baralho_id !== id);
+  renderDecks();
+  await loadDash();
+}
+
+// ── SESSÃO DE ESTUDO ────────────────────────────
+function startStudy() {
+  const now = new Date();
+  const todayStr = now.toDateString();
+  const novosHojeKey = 'teot_fc_novos_'+user.id+'_'+todayStr;
+  novosHoje = parseInt(localStorage.getItem(novosHojeKey)||'0');
+
+  const vencidos = allCards.filter(c => c.total_revisoes > 0 && new Date(c.proxima_revisao) <= now);
+  const novos    = allCards.filter(c => c.total_revisoes === 0)
+                            .slice(0, Math.max(0, MAX_NOVOS - novosHoje));
+
+  studyQueue = [...vencidos, ...novos];
+  retryQueue = [];
+  studyIdx = 0;
+  sessionStats = { total:0, novos:novos.length, revisoes:vencidos.length, hd2:0, hd:0, md:0, ez:0 };
+
+  if (!studyQueue.length) return;
+  showScreen('screen-study');
+  showCard();
+}
+
+function showCard() {
+  // Se terminou a fila principal, verificar retryQueue
+  if (studyIdx >= studyQueue.length) {
+    if (retryQueue.length > 0) {
+      studyQueue = [...retryQueue];
+      retryQueue = [];
+      studyIdx = 0;
+    } else {
+      showSummary();
+      return;
+    }
+  }
+
+  const card = studyQueue[studyIdx];
+  document.getElementById('card-front').textContent = card.frente;
+  document.getElementById('card-back').textContent  = card.verso;
+  document.getElementById('flip-card').classList.remove('flipped');
+  document.getElementById('btn-reveal').style.display = '';
+  document.getElementById('rating-area').style.display = 'none';
+
+  // Intervalo do botão fácil
+  const facilDias = calcFacilDias(card);
+  document.getElementById('easy-interval').textContent =
+    facilDias >= 30 ? '30+ dias' : facilDias + (facilDias===1?' dia':' dias');
+
+  // Progresso
+  const total = studyQueue.length;
+  const pct   = total > 0 ? Math.round(studyIdx / total * 100) : 0;
+  document.getElementById('study-prog').style.width = pct + '%';
+  document.getElementById('study-counter').textContent = studyIdx + ' / ' + total;
+
+  // Nome do baralho
+  const bar = baralhos.find(b => b.id === card.baralho_id);
+  document.getElementById('study-deck-name').textContent = bar ? bar.nome : 'Flashcards';
+}
+
+function revealCard() {
+  document.getElementById('flip-card').classList.add('flipped');
+  document.getElementById('btn-reveal').style.display = 'none';
+  document.getElementById('rating-area').style.display = '';
+}
+
+function calcFacilDias(card) {
+  const base = 7;
+  const bonus = (card.facil_consecutivo || 0);
+  if (bonus === 0) return base;
+  if (bonus === 1) return 14;
+  return Math.min(30, base * Math.pow(2, bonus - 1));
+}
+
+async function rateCard(rating) {
+  const card = studyQueue[studyIdx];
+  const now  = new Date();
+  const isNovo = card.total_revisoes === 0;
+
+  let intervaloDias, facil_consecutivo;
+  let nextRevisao = new Date();
+
+  if (rating === 0) { // Muito difícil → 10 min
+    intervaloDias = 0;
+    facil_consecutivo = 0;
+    nextRevisao = new Date(now.getTime() + 10*60*1000);
+    retryQueue.push(card);
+    sessionStats.hd2++;
+  } else if (rating === 1) { // Difícil → 1 dia
+    intervaloDias = 1;
+    facil_consecutivo = 0;
+    nextRevisao.setDate(nextRevisao.getDate() + 1);
+    sessionStats.hd++;
+  } else if (rating === 2) { // Médio → 3 dias
+    intervaloDias = 3;
+    facil_consecutivo = 0;
+    nextRevisao.setDate(nextRevisao.getDate() + 3);
+    sessionStats.md++;
+  } else { // Fácil → progressivo
+    facil_consecutivo = (card.facil_consecutivo || 0) + 1;
+    intervaloDias = calcFacilDias(card);
+    nextRevisao.setDate(nextRevisao.getDate() + intervaloDias);
+    sessionStats.ez++;
+  }
+
+  sessionStats.total++;
+  if (isNovo) {
+    const todayStr = now.toDateString();
+    const key = 'teot_fc_novos_'+user.id+'_'+todayStr;
+    novosHoje = parseInt(localStorage.getItem(key)||'0') + 1;
+    localStorage.setItem(key, novosHoje);
+  }
+
+  // Atualizar no Supabase
+  try {
+    await api('flashcards?id=eq.'+card.id, {
+      method: 'PATCH',
+      headers: {'Prefer':'return=minimal'},
+      body: JSON.stringify({
+        proxima_revisao: nextRevisao.toISOString(),
+        intervalo_dias: intervaloDias,
+        total_revisoes: (card.total_revisoes||0) + 1,
+        facil_consecutivo
+      })
+    });
+    // Atualizar local
+    const idx = allCards.findIndex(c => c.id === card.id);
+    if (idx >= 0) {
+      allCards[idx].proxima_revisao = nextRevisao.toISOString();
+      allCards[idx].intervalo_dias  = intervaloDias;
+      allCards[idx].total_revisoes  = (card.total_revisoes||0)+1;
+      allCards[idx].facil_consecutivo = facil_consecutivo;
+    }
+  } catch(e) {}
+
+  studyIdx++;
+  showCard();
+}
+
+// ── RESUMO ──────────────────────────────────────
+function showSummary() {
+  showScreen('screen-summary');
+  const s = sessionStats;
+  document.getElementById('sum-total').textContent = s.total;
+  document.getElementById('sum-novos').textContent = s.novos;
+  document.getElementById('sum-rev').textContent   = s.revisoes;
+  document.getElementById('summary-sub').textContent =
+    'Você estudou ' + s.total + ' card' + (s.total!==1?'s':'') + ' hoje!';
+
+  const max = Math.max(s.hd2, s.hd, s.md, s.ez, 1);
+  [['hd2',s.hd2],['hd',s.hd],['md',s.md],['ez',s.ez]].forEach(([k,v])=>{
+    document.getElementById('bar-'+k).style.width = Math.round(v/max*100)+'%';
+    document.getElementById('cnt-'+k).textContent = v;
+  });
+
+  // Próxima sessão
+  const nextCards = allCards.filter(c => new Date(c.proxima_revisao) > new Date())
+    .sort((a,b) => new Date(a.proxima_revisao)-new Date(b.proxima_revisao));
+  if (nextCards.length) {
+    const next = new Date(nextCards[0].proxima_revisao);
+    const diff = next - new Date();
+    const horas = Math.floor(diff/3600000);
+    const dias  = Math.floor(diff/86400000);
+    const txt   = horas < 1 ? 'em menos de 1 hora'
+                : horas < 24 ? 'em ~'+horas+' horas'
+                : 'em '+dias+' dia'+(dias!==1?'s':'');
+    document.getElementById('next-session').innerHTML =
+      '📅 Próxima revisão <strong>'+txt+'</strong>';
+  } else {
+    document.getElementById('next-session').innerHTML = '✅ Tudo em dia!';
+  }
+}
+
+// ── FECHAR MODAL COM ESC ─────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') document.getElementById('modal-create').style.display='none';
+});
+
+// ── INIT ────────────────────────────────────────
+loadDash();
 </script>
 </body>
 </html>
