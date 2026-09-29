@@ -393,14 +393,14 @@ main { padding: 12px 16px 80px; }
       <div class="login-logo-sub">Desenvolvido pelo Allan Furtado</div>
     </div>
     <div class="countdown-box">
-      <div class="countdown-title">⏳ FALTAM PARA A PROVA DO TARO</div>
+      <div class="countdown-title">⏳ FALTAM PARA A PROVA DO TEOT</div>
       <div class="countdown-grid">
         <div class="countdown-unit"><div class="countdown-num" id="cd-dias-login">--</div><div class="countdown-lbl">dias</div></div>
         <div class="countdown-unit"><div class="countdown-num" id="cd-horas-login">--</div><div class="countdown-lbl">horas</div></div>
         <div class="countdown-unit"><div class="countdown-num" id="cd-min-login">--</div><div class="countdown-lbl">min</div></div>
         <div class="countdown-unit"><div class="countdown-num" id="cd-seg-login">--</div><div class="countdown-lbl">seg</div></div>
       </div>
-      <div class="countdown-sub">Prova em <span>12/08/2026</span></div>
+      <div class="countdown-sub">Prova em <span>10/01/2027</span></div>
     </div>
     <div class="login-card">
       <div class="login-tabs">
@@ -453,6 +453,14 @@ main { padding: 12px 16px 80px; }
       </div>
       <div class="crono-arrow">›</div>
     </div>
+    <div class="crono-card" onclick="window.location.href='prioridades.html'" style="margin-top:10px">
+      <div class="crono-icon">🎯</div>
+      <div class="crono-info">
+        <div class="crono-title">Prioridades TEOT e TARO</div>
+        <div class="crono-desc">478 assuntos ranqueados por índice de prioridade · 1.319 questões</div>
+      </div>
+      <div class="crono-arrow">›</div>
+    </div>
   </div>
 </div>
 
@@ -483,14 +491,14 @@ main { padding: 12px 16px 80px; }
   </div>
 
   <div class="countdown-box" style="margin:10px 16px 0;text-align:center">
-    <div class="countdown-title">⏳ FALTAM PARA A PROVA DO TARO</div>
+    <div class="countdown-title">⏳ FALTAM PARA A PROVA DO TEOT</div>
     <div class="countdown-grid" style="justify-content:center">
       <div class="countdown-unit"><div class="countdown-num" id="cd-dias">--</div><div class="countdown-lbl">dias</div></div>
       <div class="countdown-unit"><div class="countdown-num" id="cd-horas">--</div><div class="countdown-lbl">horas</div></div>
       <div class="countdown-unit"><div class="countdown-num" id="cd-min">--</div><div class="countdown-lbl">min</div></div>
       <div class="countdown-unit"><div class="countdown-num" id="cd-seg">--</div><div class="countdown-lbl">seg</div></div>
     </div>
-    <div class="countdown-sub">Prova em <span>12/08/2026</span></div>
+    <div class="countdown-sub">Prova em <span>10/01/2027</span></div>
   </div>
   <div class="nav-scroll"><div class="nav-inner" id="nav-inner"></div></div>
 
@@ -1005,7 +1013,7 @@ function renderCrono() {
 // COUNTDOWN
 // ══════════════════════════════════════════════
 function updateCountdown() {
-  const prova = new Date('2026-08-12T08:00:00');
+  const prova = new Date('2027-01-10T08:00:00');
   const diff = Math.max(0, prova - new Date());
 
   const dias  = String(Math.floor(diff / 86400000)).padStart(2,'0');
